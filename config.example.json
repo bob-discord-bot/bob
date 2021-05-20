@@ -1,0 +1,6 @@
+{
+  "scrape_channel": 0,
+  "target_channel": 1,
+  "debug_channel": 2,
+  "scrape_amount": 50000
+}
