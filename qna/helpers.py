@@ -39,7 +39,3 @@ def get_closest_question(questions: typing.List[Question], message: str) -> Ques
             target = question
 
     return target
-
-
-def sanitize_question(content: str) -> str:
-    return content.lower().translate(str.maketrans('', '', string.punctuation))

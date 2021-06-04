@@ -1,3 +1,10 @@
+import string
+
+
+def sanitize_question(content: str) -> str:
+    return content.lower().translate(str.maketrans('', '', string.punctuation))
+
+
 class Response:
     def __init__(self, response: str):
         self.text = response
@@ -27,7 +34,7 @@ class Question:
 
     def add_response(self, resp: Response):
         for response in self.responses:
-            if response.text == resp.text:
+            if sanitize_question(response.text) == sanitize_question(resp.text):
                 response.count += resp.count
                 return
         self.responses.append(resp)

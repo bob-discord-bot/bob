@@ -1,7 +1,6 @@
 import discord
-from qna.classes import Question, Response
+from qna.classes import Question, Response, sanitize_question
 from qna import json
-from qna.helpers import sanitize_question
 from configreader import config
 
 client = discord.Client()
@@ -18,7 +17,7 @@ async def on_ready():
         if message.is_system():
             continue  # we don't want to deal with these
         if count >= limit:
-            with open('scraped-data.json', 'w+') as file:
+            with open('data.json', 'w+') as file:
                 file.write(json.questions_to_json(list(questions.values())))
             await client.close()
             print('\n> Done.')

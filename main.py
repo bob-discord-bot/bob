@@ -1,9 +1,9 @@
-from qna import helpers, json
+from qna import helpers, json, classes
 import argparse
 import discord
 from configreader import config
 
-version = 'v2.1.0 stable'
+version = 'v2.2.0 beta'
 
 parser = argparse.ArgumentParser(description=f'bob {version}')
 parser.add_argument('--debug', '-d', action='store_true', help='enable debug mode')
@@ -39,9 +39,9 @@ async def on_message(message: discord.Message):
         return
     if message.author.bot:
         return
-    content = helpers.sanitize_question(message.clean_content)
+    content = classes.sanitize_question(message.clean_content)
     if message.is_system():
-        content = helpers.sanitize_question(message.system_content)
+        content = classes.sanitize_question(message.system_content)
     question = helpers.get_closest_question(questions, content)
     response = helpers.pick_response(question)
     debug(question)
