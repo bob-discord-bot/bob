@@ -87,7 +87,7 @@ async def on_message(message: discord.Message):
 
 
 @commands.has_permissions(manage_channels=True)
-@client.command()
+@client.command(brief="sets the channel bob should talk in")
 async def channel(ctx: commands.Context, target_channel: discord.TextChannel):
     if str(ctx.guild.id) not in config["guilds"].keys():
         config["guilds"].update({str(ctx.guild.id): {"channel": target_channel.id}})
@@ -100,6 +100,7 @@ async def channel(ctx: commands.Context, target_channel: discord.TextChannel):
 @commands.is_owner()
 @client.command()
 async def stop(ctx: commands.Context):
+    await ctx.reply("stopping...")
     await client.close()
 
 
