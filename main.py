@@ -51,7 +51,7 @@ async def periodic_data_save():
 async def update_status():
     game = discord.Activity(
         type=discord.ActivityType.listening,
-        name=f"{len(question_map.keys())} questions // bob.help"
+        name=f"{len(question_map.keys())} questions // bob {version} // bob.help"
     )
     await client.change_presence(activity=game)
 
