@@ -40,7 +40,7 @@ def questions_to_json(questions: typing.List[Question]) -> str:
     for question in questions:
         out.append(question_to_dict(question))
 
-    return json.dumps(out, indent='\t')
+    return json.dumps(out, separators=(',', ':'))
 
 
 def json_to_questions(questions_json: str) -> typing.List[Question]:
