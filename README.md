@@ -1,12 +1,10 @@
-# bob v2
-bob is a chat-bot made for TFT
+# bob
+bob is a plug-n-play Discord chat bot
 
 ## how to use
 1. install the requirements
 2. put token in `token.txt`
 3. run main.py
-
-is it hard/??????
 
 ## TODOs
 - limit amount of data stored
