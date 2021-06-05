@@ -19,6 +19,44 @@ config = {"guilds": {}}
 
 
 @client.event
+async def on_command_error(ctx: commands.Context, error):
+    if hasattr(ctx.command, 'on_error'):
+        return
+
+    ignored = (commands.CommandNotFound,)
+
+    error = getattr(error, 'original', error)
+
+    if isinstance(error, ignored):
+        return
+
+    elif isinstance(error, commands.MissingRequiredArgument):
+        embed = discord.Embed(
+            title="you're missing a required argument!",
+            description="check help for details.",
+            color=red_color
+        )
+        return await ctx.reply(embed=embed)
+
+    elif isinstance(error, commands.MissingPermissions):
+        perms = "\n - ".join(error.missing_perms)
+        embed = discord.Embed(
+            title="you're missing permissions to run this command.",
+            description=f"you're missing the following permissions:\n{perms}",
+            color=red_color
+        )
+        return await ctx.reply(embed=embed)
+
+    elif isinstance(error, commands.NotOwner):
+        embed = discord.Embed(
+            title="you're missing permissions to run this command.",
+            description=f"only the owner of the bot can run this command.",
+            color=red_color
+        )
+        return await ctx.reply(embed=embed)
+
+
+@client.event
 async def on_ready():
     print(f"bob {version} is ready!")
     periodic_data_save.start()
