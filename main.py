@@ -4,18 +4,25 @@ import argparse
 import discord
 from discord.ext import commands, tasks
 import json
+import logging
 
-version = "v2.2.0 alpha"
+version = "v2.2.1 alpha"
 blue_color = 0x2273E6
 red_color = 0xE82E3E
 
 parser = argparse.ArgumentParser(description=f"bob {version}")
-parser.add_argument("--debug", "-d", action="store_true", help="enable debug mode (currently unused)")
+parser.add_argument("--debug", "-d", action="store_true", help="enable debug mode")
 args = parser.parse_args()
 
-client = commands.Bot(command_prefix="bob.")
+logging.basicConfig(
+    level=logging.DEBUG if args.debug else logging.INFO,
+    format='[%(asctime)s / %(levelname)s] %(name)s: %(message)s'
+)
+client = commands.Bot(command_prefix="bc." if args.debug else "b.")
 question_map = {}
 config = {"guilds": {}}
+
+logger = logging.getLogger("bob")
 
 
 @client.event
@@ -58,40 +65,44 @@ async def on_command_error(ctx: commands.Context, error):
 
 @client.event
 async def on_ready():
-    print(f"bob {version} is ready!")
+    logger.info(f"bob {version} is ready!")
     periodic_data_save.start()
     update_status.start()
 
 
 @client.event
 async def on_disconnect():
-    print(f"client disconnected, saving data...", end=" ")
+    logger.debug("client disconnected, saving data...")
     with open("config.json", "w+") as file:
         json.dump(config, file)
 
     with open("data.json", "w+") as file:
         file.write(qna.json.questions_to_json(list(question_map.values())))
 
-    print("done.")
+    logger.debug("done saving data.")
 
 
 @tasks.loop(minutes=5.0)
 async def periodic_data_save():
-    print(f"saving data...", end=" ")
+    logger.debug("saving data (periodic)...")
     with open("config.json", "w+") as file:
         json.dump(config, file)
 
     with open("data.json", "w+") as file:
         file.write(qna.json.questions_to_json(list(question_map.values())))
 
-    print("done.")
+    logger.debug("done saving data.")
 
 
 @tasks.loop(seconds=15.0)
 async def update_status():
+    logger.debug("calculating responses...")
+    responses = [response for question in question_map.values() for response in question.responses]
+    logger.debug(f"{len(responses)} responses, updating status...")
     game = discord.Activity(
         type=discord.ActivityType.listening,
-        name=f"{len(question_map.keys())} questions in {len(client.guilds)} servers // bob {version} // bob.help"
+        name=f"{len(question_map.keys())} questions and {len(responses)} responses in {len(client.guilds)} servers // "
+             f"bob {version} // {client.command_prefix}help"
     )
     await client.change_presence(activity=game)
 
@@ -110,6 +121,7 @@ async def on_message(message: discord.Message):
                 await message.reply(response.text)
             except discord.errors.HTTPException:
                 return
+            logger.debug(f"reply: {message.clean_content} -> {response.text}")
         else:
             await client.process_commands(message)
     else:
@@ -125,7 +137,7 @@ async def on_message(message: discord.Message):
         if content not in question_map.keys():
             question_map.update({content: qna.classes.Question(content)})
         question_map[content].add_response(qna.classes.Response(message.clean_content))
-        print(content, '->', message.clean_content)
+        logger.debug(f"save: {reply.clean_content} -> {message.clean_content}")
 
 
 @commands.has_permissions(manage_channels=True)
@@ -158,21 +170,21 @@ async def invite(ctx: commands.Context):
 
 
 if __name__ == "__main__":
-    print("loading questions...")
+    logger.debug("loading questions...")
     with open("data.json") as file:
         questions = qna.json.json_to_questions(file.read())
     for question in questions:
         question_map.update({question.text: question})
     del questions
-    print("loaded", len(question_map.keys()), "questions")
+    logger.debug(f"loaded {len(question_map.keys())} questions")
 
-    print("loading config...")
+    logger.debug("loading config...")
     if os.path.exists("config.json"):
         with open("config.json") as file:
             config = json.load(file)
             if "guilds" not in config.keys():
                 config.update({"guilds": {}})
 
-    print("connecting to discord...")
+    logger.debug("connecting to discord...")
     with open("token.txt") as file:
         client.run(file.readline())
