@@ -61,8 +61,6 @@ async def on_message(message: discord.Message):
     if message.author.bot or message.is_system() or message.guild is None:
         return
 
-    await client.process_commands(message)
-
     if str(message.guild.id) in config["guilds"].keys():
         if message.channel.id == config["guilds"][str(message.guild.id)]["channel"]:
             content = qna.classes.sanitize_question(message.clean_content)
@@ -72,6 +70,10 @@ async def on_message(message: discord.Message):
                 await message.reply(response.text)
             except discord.errors.HTTPException:
                 return
+        else:
+            await client.process_commands(message)
+    else:
+        await client.process_commands(message)
 
     if message.reference:
         try:
@@ -102,6 +104,14 @@ async def channel(ctx: commands.Context, target_channel: discord.TextChannel):
 async def stop(ctx: commands.Context):
     await ctx.reply("stopping...")
     await client.close()
+
+
+@client.command(brief="invite me to your server!")
+async def invite(ctx: commands.Context):
+    embed = discord.Embed(title="here you go!", description=f"you can invite me to your server by [clicking on this "
+                                                            f"link](https://discord.com/api/oauth2/authorize?client_id="
+                                                            f"{client.user.id}&permissions=3072&scope=bot)")
+    await ctx.reply(embed=embed)
 
 
 if __name__ == "__main__":
