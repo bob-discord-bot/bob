@@ -12,3 +12,4 @@ is it hard/??????
 - limit amount of data stored
 - opt-out
 - (optional) split the bot with cogs
+- (optional) move from JSON files to a database, preferably SQLite
