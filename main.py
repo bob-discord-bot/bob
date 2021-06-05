@@ -6,6 +6,7 @@ from discord.ext import commands, tasks
 import json
 
 version = "v2.2.0 alpha"
+blue_color = 0x2273E6
 
 parser = argparse.ArgumentParser(description=f"bob {version}")
 parser.add_argument("--debug", "-d", action="store_true", help="enable debug mode (currently unused)")
@@ -108,9 +109,12 @@ async def stop(ctx: commands.Context):
 
 @client.command(brief="invite me to your server!")
 async def invite(ctx: commands.Context):
-    embed = discord.Embed(title="here you go!", description=f"you can invite me to your server by [clicking on this "
-                                                            f"link](https://discord.com/api/oauth2/authorize?client_id="
-                                                            f"{client.user.id}&permissions=3072&scope=bot)")
+    embed = discord.Embed(
+        title="here you go!",
+        description=f"you can invite me to your server by [clicking on this link](https://discord.com/api/oauth2/author"
+                    f"ize?client_id={client.user.id}&permissions=3072&scope=bot)",
+        color=blue_color
+    )
     await ctx.reply(embed=embed)
 
 
