@@ -7,6 +7,7 @@ import json
 
 version = "v2.2.0 alpha"
 blue_color = 0x2273E6
+red_color = 0xE82E3E
 
 parser = argparse.ArgumentParser(description=f"bob {version}")
 parser.add_argument("--debug", "-d", action="store_true", help="enable debug mode (currently unused)")
