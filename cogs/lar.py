@@ -15,7 +15,8 @@ class LaR(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
-        if message.author.bot or message.is_system() or message.guild is None:
+        if (message.author.bot or message.is_system() or message.guild is None
+                or message.author.id in self.config.config["blacklist"]):
             return
 
         # Reply
@@ -31,7 +32,7 @@ class LaR(commands.Cog):
                 self.logger.debug(f"reply: {message.clean_content} -> {response.text}")
 
         # Learn
-        if message.author.id in self.config.config["optout"] or message.author.id in self.config.config["blacklist"]:
+        if message.author.id in self.config.config["optout"]:
             return
 
         if message.reference:
