@@ -1,8 +1,8 @@
 # LaR: Learn and Reply
-import bob
 import qna
 import discord
 import logging
+from cogs.config import Config
 from discord.ext import commands
 
 
@@ -10,6 +10,7 @@ class LaR(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
         self.logger = logging.getLogger("cogs.LaR")
+        self.config: Config = client.get_cog("Config")
         self.logger.debug("registered.")
 
     @commands.Cog.listener()
@@ -18,10 +19,10 @@ class LaR(commands.Cog):
             return
 
         # Reply
-        if str(message.guild.id) in bob.config["guilds"].keys():
-            if message.channel.id == bob.config["guilds"][str(message.guild.id)]["channel"]:
+        if str(message.guild.id) in self.config.config["guilds"].keys():
+            if message.channel.id == self.config.config["guilds"][str(message.guild.id)]["channel"]:
                 content = qna.classes.sanitize_question(message.clean_content)
-                question = qna.helpers.get_closest_question(list(bob.question_map.values()), content)
+                question = qna.helpers.get_closest_question(list(self.config.question_map.values()), content)
                 response = qna.helpers.pick_response(question)
                 try:
                     await message.reply(response.text)
@@ -30,7 +31,7 @@ class LaR(commands.Cog):
                 self.logger.debug(f"reply: {message.clean_content} -> {response.text}")
 
         # Learn
-        if message.author.id in bob.config["optout"]:
+        if message.author.id in self.config.config["optout"]:
             return
 
         if message.reference:
@@ -43,9 +44,9 @@ class LaR(commands.Cog):
                 return
 
             content = qna.classes.sanitize_question(reply.clean_content)
-            if content not in bob.question_map.keys():
-                bob.question_map.update({content: qna.classes.Question(content)})
-            bob.question_map[content].add_response(qna.classes.Response(message.clean_content))
+            if content not in self.config.question_map.keys():
+                self.config.question_map.update({content: qna.classes.Question(content)})
+            self.config.question_map[content].add_response(qna.classes.Response(message.clean_content))
             self.logger.debug(f"save: {reply.clean_content} -> {message.clean_content}")
 
 

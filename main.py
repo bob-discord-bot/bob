@@ -1,7 +1,4 @@
-import os
 import bob
-import qna
-import json
 import discord
 import logging
 import argparse
@@ -68,7 +65,7 @@ async def on_command_error(ctx: commands.Context, error):
 
 @client.event
 async def on_ready():
-    client.load_extension("cogs.events")
+    client.load_extension("cogs.config")
     client.load_extension("cogs.lar")
     client.load_extension("cogs.maintenance")
     client.load_extension("cogs.configuration")
@@ -80,35 +77,17 @@ async def on_ready():
 
 @client.event
 async def on_message(message: discord.Message):
+    config = client.get_cog("Config")
     if message.author.bot or message.is_system() or message.guild is None:
         return
 
-    if str(message.guild.id) in bob.config["guilds"].keys():
-        if not message.channel.id == bob.config["guilds"][str(message.guild.id)]["channel"]:
+    if str(message.guild.id) in config.config["guilds"].keys():
+        if not message.channel.id == config.config["guilds"][str(message.guild.id)]["channel"]:
             await client.process_commands(message)
     else:
         await client.process_commands(message)
 
 if __name__ == "__main__":
-    logger.debug("loading questions...")
-    with open("data.json") as file:
-        questions = qna.json.json_to_questions(file.read())
-    for question in questions:
-        bob.question_map.update({question.text: question})
-    del questions
-    logger.debug(f"loaded {len(bob.question_map.keys())} questions")
-
-    logger.debug("loading config...")
-    if os.path.exists("config.json"):
-        with open("config.json") as file:
-            bob.config = json.load(file)
-            if "guilds" not in bob.config.keys():
-                bob.config.update({"guilds": {}})
-            if "optout" not in bob.config.keys():
-                bob.config.update({"optout": []})
-            if "question_limit" not in bob.config.keys():
-                bob.config.update({"question_limit": 100000})
-
     logger.debug("connecting to discord...")
     with open("token.txt") as file:
         client.run(file.readline())

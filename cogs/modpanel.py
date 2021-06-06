@@ -1,6 +1,7 @@
 import bob
 import logging
-import multiprocessing
+import threading
+from cogs.config import Config
 from discord.ext import commands
 from flask import Flask, render_template
 
@@ -15,27 +16,27 @@ class ModPanel(commands.Cog):
 
         @self.app.route("/")
         def index():
-            responses = len([response for question in bob.question_map.values() for response in question.responses])
+            self.logger.debug("calculating responses...")
+            config: Config = client.get_cog("Config")
+            responses = len([response for question in config.question_map.values()
+                             for response in question.responses])
+            self.logger.debug("%d responses", responses)
             return render_template(
                 'index.html',
                 bob_version=bob.__version__,
-                questions=len(bob.question_map.keys()),
+                questions=len(config.question_map.keys()),
                 responses=responses,
                 guilds=len(self.client.guilds),
                 users=len(self.client.users),
                 shards=self.client.shard_count
             )
 
-        self.process = multiprocessing.Process(
+        self.process = threading.Thread(
             target=self.app.run,
             kwargs={"host": "127.0.0.1", "port": 8540},
             daemon=True
         )
         self.process.start()
-
-    def cog_unload(self):
-        self.process.kill()
-        self.process.close()
 
 
 def setup(client: commands.Bot):
