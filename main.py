@@ -105,6 +105,8 @@ if __name__ == "__main__":
                 bob.config.update({"guilds": {}})
             if "optout" not in bob.config.keys():
                 bob.config.update({"optout": []})
+            if "question_limit" not in bob.config.keys():
+                bob.config.update({"question_limit": 100000})
 
     logger.debug("connecting to discord...")
     with open("token.txt") as file:

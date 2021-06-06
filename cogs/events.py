@@ -11,7 +11,7 @@ class Events(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
         self.logger = logging.getLogger("cogs.Events")
-        self.periodic_data_save.start()
+        self.periodic_data_clean_and_save.start()
         self.update_status.start()
         self.logger.debug("registered.")
 
@@ -31,8 +31,13 @@ class Events(commands.Cog):
         self.save_data()
 
     @tasks.loop(minutes=5.0)
-    async def periodic_data_save(self):
-        self.logger.debug("saving data (periodic)...")
+    async def periodic_data_clean_and_save(self):
+        self.logger.debug("cleaning data...")
+        removed = 0
+        while len(bob.question_map.values()) > bob.config["question_limit"]:
+            bob.question_map.pop(list(bob.question_map.keys())[0])
+            removed += 1
+        self.logger.debug("removed %d questions, saving data...", removed)
         self.save_data()
 
     @tasks.loop(seconds=15.0)
