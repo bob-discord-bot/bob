@@ -115,6 +115,7 @@ class ModPanel(commands.Cog):
         @self.app.route("/maintenance/update")
         def update():
             subprocess.run(["git", "pull"])
+            subprocess.run(["pip", "install", "-r", "requirements.txt"])
             self.client.loop.run_until_complete(self.client.close())
             return "", 204
 
