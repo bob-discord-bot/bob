@@ -43,19 +43,6 @@ class ModPanel(commands.Cog):
                 questions=questions
             )
 
-        @self.app.route("/responses")
-        def response_list():
-            questions_list = list(self.config.question_map.values())
-            questions = {k: questions_list[k] for k in range(len(questions_list))}
-            search = request.args.get('search')
-            if search:
-                questions = {k: v for k, v in questions.items() for response in v.responses if search in response.text}
-            return render_template(
-                "response_list.html",
-                bob_version=bob.__version__,
-                questions=questions
-            )
-
         @self.app.route("/question/<question_id>", methods=["GET", "DELETE"])
         def question_manage(question_id):
             question_id = int(question_id)
@@ -71,6 +58,27 @@ class ModPanel(commands.Cog):
             elif request.method == "DELETE":
                 self.config.question_map.pop(question_key)
                 return "", 204
+
+        @self.app.route("/question/<question_id>/response/<response_id>", methods=["DELETE"])
+        def delete_response_from_response(question_id, response_id):
+            question_id = int(question_id)
+            response_id = int(response_id)
+            question_key = list(self.config.question_map.keys())[question_id]
+            self.config.question_map[question_key].responses.pop(response_id)
+            return "", 204
+
+        @self.app.route("/responses")
+        def response_list():
+            questions_list = list(self.config.question_map.values())
+            questions = {k: questions_list[k] for k in range(len(questions_list))}
+            search = request.args.get('search')
+            if search:
+                questions = {k: v for k, v in questions.items() for response in v.responses if search in response.text}
+            return render_template(
+                "response_list.html",
+                bob_version=bob.__version__,
+                questions=questions
+            )
 
         @self.app.route("/blacklist", methods=["GET", "POST"])
         def blacklist():

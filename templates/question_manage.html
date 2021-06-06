@@ -36,7 +36,10 @@
             <h2>responses</h2>
             <ul>
                 {% for response in question.responses %}
-                    <li>{{ response.text }} <span class="badge bg-secondary">{{ response.count }}</span></li>
+                    <li>
+                        {{ response.text }} <span class="badge bg-secondary">{{ response.count }}</span>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="removeResponse({{ loop.index0 }})">remove</button>
+                    </li>
                 {% endfor %}
             </ul>
 
@@ -51,6 +54,16 @@
                 }).then(response => {
                     if (response.ok) {
                         location.href = "/questions"
+                    }
+                })
+            }
+
+            function removeResponse(id) {
+                fetch(`/question/{{ id }}/response/${id}`, {
+                    method: 'DELETE'
+                }).then(response => {
+                    if (response.ok) {
+                        location.reload()
                     }
                 })
             }
