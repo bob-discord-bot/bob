@@ -32,10 +32,15 @@ class ModPanel(commands.Cog):
 
         @self.app.route("/questions")
         def question_list():
+            questions_list = list(self.config.question_map.values())
+            questions = {k: questions_list[k] for k in range(len(questions_list))}
+            search = request.args.get('search')
+            if search:
+                questions = {k: v for k, v in questions.items() if search in v.text}
             return render_template(
                 "question_list.html",
                 bob_version=bob.__version__,
-                questions=list(self.config.question_map.values())
+                questions=questions
             )
 
         @self.app.route("/question/<question_id>", methods=["GET", "DELETE"])

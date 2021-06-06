@@ -25,17 +25,25 @@
             </div>
         </nav>
 
-        <div class="container mt-3">
+        <div class="container mt-4">
             <h1>questions</h1>
-            <div class="accordion" id="questionAccordion">
-                {% for question in questions %}
+
+            <form action="/questions" method="get">
+                <div class="input-group mt-3 mb-3">
+                    <input type="text" class="form-control" placeholder="enter text" name="search" autocomplete="off">
+                    <button class="btn btn-outline-primary" type="submit">search</button>
+                </div>
+            </form>
+
+            <div class="accordion mb-4" id="questionAccordion">
+                {% for index, question in questions.items() %}
                     <div class="accordion-item">
-                        <h2 class="accordion-header" id="questionH{{ loop.index }}">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#questionC{{ loop.index }}">
+                        <h2 class="accordion-header" id="questionH{{ index }}">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#questionC{{ index }}">
                                 {{ question.text }}
                             </button>
                         </h2>
-                        <div id="questionC{{ loop.index }}" class="accordion-collapse collapse" data-bs-parent="#questionAccordion">
+                        <div id="questionC{{ index }}" class="accordion-collapse collapse" data-bs-parent="#questionAccordion">
                             <div class="accordion-body">
                                 <p>responses:</p>
                                 <ul>
@@ -43,11 +51,14 @@
                                         <li>{{ response.text }} <span class="badge bg-secondary">{{ response.count }}</span></li>
                                     {% endfor %}
                                 </ul>
-                                <a class="btn btn-primary" href="/question/{{ loop.index0 }}">manage</a>
+                                <a class="btn btn-primary" href="/question/{{ index }}">manage</a>
                             </div>
                         </div>
                     </div>
                 {% endfor %}
+                {% if questions.keys()|length == 0 %}
+                <h3>no questions found</h3>
+                {% endif %}
             </div>
         </div>
 
