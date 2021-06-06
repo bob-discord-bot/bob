@@ -26,7 +26,6 @@ class ModPanel(commands.Cog):
                 questions=len(self.config.question_map.keys()),
                 responses=responses,
                 guilds=len(self.client.guilds),
-                users=len(self.client.users),
                 shards=self.client.shard_count
             )
 
