@@ -97,6 +97,15 @@ class ModPanel(commands.Cog):
             self.config.config["blacklist"].remove(userid)
             return "", 204
 
+        @self.app.route("/maintenance")
+        def maintenance():
+            return redirect("https://media.discordapp.net/attachments/848324447676792926/851063041511391263"
+                            "/20210507_104052.jpg")
+            # return render_template(
+            #     "maintenance.html",
+            #     bob_version=bob.__version__
+            # )
+
         self.process = threading.Thread(
             target=self.app.run,
             kwargs={"host": "127.0.0.1", "port": 8540},

@@ -67,12 +67,12 @@ async def on_command_error(ctx: commands.Context, error):
 async def on_ready():
     client.load_extension("cogs.config")
     client.load_extension("cogs.lar")
-    client.load_extension("cogs.maintenance")
+    client.load_extension("cogs.invite")
     client.load_extension("cogs.configuration")
     client.load_extension("cogs.help")
     client.load_extension("cogs.optout")
     client.load_extension("cogs.modpanel")
-    logger.info(f"bob {bob.__version__} is ready!")
+    logger.info(f"bob v{bob.__version__} is ready!")
 
 
 @client.event
