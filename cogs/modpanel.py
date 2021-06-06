@@ -52,7 +52,7 @@ class ModPanel(commands.Cog):
                 )
             elif request.method == "DELETE":
                 self.config.question_map.pop(question_key)
-                return None
+                return "", 204
 
         self.process = threading.Thread(
             target=self.app.run,
