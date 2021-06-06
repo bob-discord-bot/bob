@@ -1,6 +1,8 @@
 import bob
 import logging
+import subprocess
 import threading
+import nest_asyncio
 from cogs.config import Config
 from discord.ext import commands
 from flask import Flask, render_template, request, redirect
@@ -13,6 +15,7 @@ class ModPanel(commands.Cog):
         self.logger.debug("registered.")
         self.config: Config = client.get_cog("Config")
         self.app = Flask("ModPanel")
+        nest_asyncio.apply(self.client.loop)
 
         @self.app.route("/")
         def index():
@@ -99,12 +102,21 @@ class ModPanel(commands.Cog):
 
         @self.app.route("/maintenance")
         def maintenance():
-            return redirect("https://media.discordapp.net/attachments/848324447676792926/851063041511391263"
-                            "/20210507_104052.jpg")
-            # return render_template(
-            #     "maintenance.html",
-            #     bob_version=bob.__version__
-            # )
+            return render_template(
+                "maintenance.html",
+                bob_version=bob.__version__
+            )
+
+        @self.app.route("/maintenance/stop")
+        def stop():
+            self.client.loop.run_until_complete(self.client.close())
+            return "", 204
+
+        @self.app.route("/maintenance/update")
+        def update():
+            subprocess.run(["git", "pull"])
+            self.client.loop.run_until_complete(self.client.close())
+            return "", 204
 
         self.process = threading.Thread(
             target=self.app.run,
