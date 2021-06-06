@@ -35,7 +35,8 @@
         </nav>
 
         <div class="container mt-4 mb-4">
-            <h1>managing question "{{ question.text }}"</h1>
+            <h1>managing question #{{ id }}</h1>
+            <p>{{ question.text }}</p>
             <h2>responses</h2>
             <div class="accordion mb-4" id="responseAccordion">
                 {% for response in question.responses %}
