@@ -7,5 +7,4 @@ bob is a plug-n-play Discord chat bot
 3. run main.py
 
 ## TODOs
-- web UI for moderation of questions and responses
 - (optional) move from JSON files to a database, preferably SQLite
