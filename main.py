@@ -74,6 +74,7 @@ async def on_ready():
     client.load_extension("cogs.configuration")
     client.load_extension("cogs.help")
     client.load_extension("cogs.optout")
+    client.load_extension("cogs.modpanel")
     logger.info(f"bob {bob.__version__} is ready!")
 
 
