@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>bob v{{ bob_version }} // manage question</title>
+        <title>bob v{{ bob_version }} // questions</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
     </head>
     <body>
@@ -18,13 +18,13 @@
                             <a class="nav-link" href="/">home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" href="/questions">questions</a>
+                            <a class="nav-link" href="/questions">questions</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="/responses">responses</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/blacklist">blacklist</a>
+                            <a class="nav-link active" href="/blacklist">blacklist</a>
                         </li>
                     </ul>
                 </div>
@@ -32,25 +32,44 @@
         </nav>
 
         <div class="container mt-4">
-            <h1>managing question "{{ question.text }}"</h1>
-            <h2>responses</h2>
-            <ul>
-                {% for response in question.responses %}
-                    <li>{{ response.text }} <span class="badge bg-secondary">{{ response.count }}</span></li>
-                {% endfor %}
-            </ul>
+            <h1>blacklist</h1>
 
-            <h2>actions</h2>
-            <button type="button" class="btn btn-danger" onclick="removeQuestion()">remove question</button>
+            <form action="/blacklist" method="post">
+                <div class="input-group mt-3 mb-3">
+                    <input type="text" class="form-control" placeholder="enter user ID" name="id" autocomplete="off">
+                    <button class="btn btn-outline-success" type="submit">add to blacklist</button>
+                </div>
+            </form>
+
+            <div class="accordion mb-4" id="blacklistAccordion">
+                {% for id in blacklist %}
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="blacklistH{{ id }}">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#blacklistC{{ id }}">
+                                {{ id }}
+                            </button>
+                        </h2>
+                        <div id="blacklistC{{ id }}" class="accordion-collapse collapse" data-bs-parent="#blacklistAccordion">
+                            <div class="accordion-body">
+                                <button type="button" class="btn btn-danger" onclick="remove('{{ id }}')">remove from blacklist</button>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                {% if blacklist|length == 0 %}
+                <h3>there's no one in the blacklist</h3>
+                {% endif %}
+            </div>
         </div>
 
         <script>
-            function removeQuestion() {
-                fetch("/question/{{ id }}", {
+            function remove(id) {
+                fetch(`/blacklist/${id}`, {
                     method: 'DELETE'
                 }).then(response => {
                     if (response.ok) {
-                        location.href = "/questions"
+                        location.reload()
                     }
                 })
             }

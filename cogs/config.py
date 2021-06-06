@@ -12,7 +12,7 @@ class Config(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
         self.logger = logging.getLogger("cogs.Config")
-        self.config = {"guilds": {}, "optout": [], "question_limit": 100000}
+        self.config = {"guilds": {}, "optout": [], "question_limit": 100000, "blacklist": []}
         self.question_map = {}
 
         self.logger.debug("loading questions...")
@@ -33,6 +33,8 @@ class Config(commands.Cog):
                     self.config.update({"optout": []})
                 if "question_limit" not in self.config.keys():
                     self.config.update({"question_limit": 100000})
+                if "blacklist" not in self.config.keys():
+                    self.config.update({"blacklist": []})
 
         self.logger.debug("loaded config.")
 
@@ -58,7 +60,7 @@ class Config(commands.Cog):
         self.logger.debug("removed %d questions, saving data...", removed)
         self.save_data()
 
-    @tasks.loop(seconds=15.0)
+    @tasks.loop(minutes=1.0)
     async def update_status(self):
         self.logger.debug("calculating responses...")
         responses = len([response for question in self.question_map.values() for response in question.responses])

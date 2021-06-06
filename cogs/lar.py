@@ -31,7 +31,7 @@ class LaR(commands.Cog):
                 self.logger.debug(f"reply: {message.clean_content} -> {response.text}")
 
         # Learn
-        if message.author.id in self.config.config["optout"]:
+        if message.author.id in self.config.config["optout"] or message.author.id in self.config.config["blacklist"]:
             return
 
         if message.reference:

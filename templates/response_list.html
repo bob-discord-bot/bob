@@ -18,10 +18,10 @@
                             <a class="nav-link" href="/">home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" href="/questions">questions</a>
+                            <a class="nav-link" href="/questions">questions</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/responses">responses</a>
+                            <a class="nav-link active" href="/responses">responses</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="/blacklist">blacklist</a>
@@ -32,24 +32,24 @@
         </nav>
 
         <div class="container mt-4">
-            <h1>questions</h1>
+            <h1>responses</h1>
 
-            <form action="/questions" method="get">
+            <form action="/responses" method="get">
                 <div class="input-group mt-3 mb-3">
                     <input type="text" class="form-control" placeholder="enter text" name="search" autocomplete="off">
                     <button class="btn btn-outline-primary" type="submit">search</button>
                 </div>
             </form>
 
-            <div class="accordion mb-4" id="questionAccordion">
+            <div class="accordion mb-4" id="responseAccordion">
                 {% for index, question in questions.items() %}
                     <div class="accordion-item">
-                        <h2 class="accordion-header" id="questionH{{ index }}">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#questionC{{ index }}">
+                        <h2 class="accordion-header" id="responseH{{ index }}">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#responseC{{ index }}">
                                 {{ question.text }}
                             </button>
                         </h2>
-                        <div id="questionC{{ index }}" class="accordion-collapse collapse" data-bs-parent="#questionAccordion">
+                        <div id="responseC{{ index }}" class="accordion-collapse collapse" data-bs-parent="#responseAccordion">
                             <div class="accordion-body">
                                 <p>responses:</p>
                                 <ul>

@@ -3,7 +3,7 @@ import logging
 import threading
 from cogs.config import Config
 from discord.ext import commands
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 
 
 class ModPanel(commands.Cog):
@@ -43,6 +43,19 @@ class ModPanel(commands.Cog):
                 questions=questions
             )
 
+        @self.app.route("/responses")
+        def response_list():
+            questions_list = list(self.config.question_map.values())
+            questions = {k: questions_list[k] for k in range(len(questions_list))}
+            search = request.args.get('search')
+            if search:
+                questions = {k: v for k, v in questions.items() for response in v.responses if search in response.text}
+            return render_template(
+                "response_list.html",
+                bob_version=bob.__version__,
+                questions=questions
+            )
+
         @self.app.route("/question/<question_id>", methods=["GET", "DELETE"])
         def question_manage(question_id):
             question_id = int(question_id)
@@ -58,6 +71,24 @@ class ModPanel(commands.Cog):
             elif request.method == "DELETE":
                 self.config.question_map.pop(question_key)
                 return "", 204
+
+        @self.app.route("/blacklist", methods=["GET", "POST"])
+        def blacklist():
+            if request.method == "GET":
+                return render_template(
+                    "blacklist.html",
+                    bob_version=bob.__version__,
+                    blacklist=self.config.config["blacklist"]
+                )
+            elif request.method == "POST":
+                self.config.config["blacklist"].append(int(request.form["id"]))
+                return redirect("/blacklist")
+
+        @self.app.route("/blacklist/<userid>", methods=["DELETE"])
+        def delete_from_blacklist(userid):
+            userid = int(userid)
+            self.config.config["blacklist"].remove(userid)
+            return "", 204
 
         self.process = threading.Thread(
             target=self.app.run,
