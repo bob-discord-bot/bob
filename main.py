@@ -73,6 +73,7 @@ async def on_ready():
     client.load_extension("cogs.maintenance")
     client.load_extension("cogs.configuration")
     client.load_extension("cogs.help")
+    client.load_extension("cogs.optout")
     logger.info(f"bob {bob.__version__} is ready!")
 
 
@@ -102,6 +103,8 @@ if __name__ == "__main__":
             bob.config = json.load(file)
             if "guilds" not in bob.config.keys():
                 bob.config.update({"guilds": {}})
+            if "optout" not in bob.config.keys():
+                bob.config.update({"optout": []})
 
     logger.debug("connecting to discord...")
     with open("token.txt") as file:

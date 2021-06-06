@@ -30,6 +30,9 @@ class LaR(commands.Cog):
                 self.logger.debug(f"reply: {message.clean_content} -> {response.text}")
 
         # Learn
+        if message.author.id in bob.config["optout"]:
+            return
+
         if message.reference:
             try:
                 reply = await message.channel.fetch_message(message.reference.message_id)
