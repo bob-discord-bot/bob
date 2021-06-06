@@ -31,17 +31,25 @@
             </div>
         </nav>
 
-        <div class="container mt-4">
+        <div class="container mt-4 mb-4">
             <h1>managing question "{{ question.text }}"</h1>
             <h2>responses</h2>
-            <ul>
+            <div class="accordion mb-4" id="responseAccordion">
                 {% for response in question.responses %}
-                    <li>
-                        {{ response.text }} <span class="badge bg-secondary">{{ response.count }}</span>
-                        <button type="button" class="btn btn-danger btn-sm" onclick="removeResponse({{ loop.index0 }})">remove</button>
-                    </li>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="responseH{{ loop.index }}">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#responseC{{ loop.index }}">
+                                {{ response.text }} <span class="badge bg-secondary" style="margin-left: 0.75em;">{{ response.count }}</span>
+                            </button>
+                        </h2>
+                        <div id="responseC{{ loop.index }}" class="accordion-collapse collapse" data-bs-parent="#responseAccordion">
+                            <div class="accordion-body">
+                                <button type="button" class="btn btn-danger" onclick="removeResponse({{ loop.index0 }})">remove</button>
+                            </div>
+                        </div>
+                    </div>
                 {% endfor %}
-            </ul>
+            </div>
 
             <h2>actions</h2>
             <button type="button" class="btn btn-danger" onclick="removeQuestion()">remove question</button>

@@ -31,7 +31,7 @@
             </div>
         </nav>
 
-        <div class="container mt-4">
+        <div class="container mt-4 mb-4">
             <h1>blacklist</h1>
 
             <form action="/blacklist" method="post">
@@ -41,7 +41,7 @@
                 </div>
             </form>
 
-            <div class="accordion mb-4" id="blacklistAccordion">
+            <div class="accordion" id="blacklistAccordion">
                 {% for id in blacklist %}
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="blacklistH{{ id }}">

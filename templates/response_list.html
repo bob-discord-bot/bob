@@ -31,7 +31,7 @@
             </div>
         </nav>
 
-        <div class="container mt-4">
+        <div class="container mt-4 mb-4">
             <h1>responses</h1>
 
             <form action="/responses" method="get">
@@ -41,7 +41,7 @@
                 </div>
             </form>
 
-            <div class="accordion mb-4" id="responseAccordion">
+            <div class="accordion" id="responseAccordion">
                 {% for index, question in questions.items() %}
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="responseH{{ index }}">
