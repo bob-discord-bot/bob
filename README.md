@@ -8,5 +8,4 @@ bob is a plug-n-play Discord chat bot
 
 ## TODOs
 - limit amount of data stored
-- opt-out
 - (optional) move from JSON files to a database, preferably SQLite
