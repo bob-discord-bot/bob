@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>bob v{{ bob_version }} // home</title>
+        <title>bob v{{ bob_version }} // manage question</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
     </head>
     <body>
@@ -15,10 +15,10 @@
                 <div class="collapse navbar-collapse" id="bobNavBar">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link active" href="/">home</a>
+                            <a class="nav-link" href="/">home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/questions">questions</a>
+                            <a class="nav-link active" href="/questions">questions</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="/responses">responses</a>
@@ -32,15 +32,7 @@
         </nav>
 
         <div class="container mt-3">
-            <h1>bob v{{ bob_version }} admin panel</h1>
-            <h2>statistics</h2>
-            <ul>
-                <li>{{ questions }} questions</li>
-                <li>{{ responses }} responses</li>
-                <li>{{ guilds }} guilds</li>
-                <li>{{ users }} users</li>
-                <li>{{ shards }} shards</li>
-            </ul>
+            <h1>managing question "{{ question.text }}"</h1>
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
