@@ -3,7 +3,7 @@ import logging
 import threading
 from cogs.config import Config
 from discord.ext import commands
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 
 class ModPanel(commands.Cog):
@@ -21,7 +21,7 @@ class ModPanel(commands.Cog):
                              for response in question.responses])
             self.logger.debug("%d responses", responses)
             return render_template(
-                'index.html',
+                "index.html",
                 bob_version=bob.__version__,
                 questions=len(self.config.question_map.keys()),
                 responses=responses,
@@ -33,22 +33,26 @@ class ModPanel(commands.Cog):
         @self.app.route("/questions")
         def question_list():
             return render_template(
-                'question_list.html',
+                "question_list.html",
                 bob_version=bob.__version__,
                 questions=list(self.config.question_map.values())
             )
 
-        @self.app.route("/question/<question_id>")
+        @self.app.route("/question/<question_id>", methods=["GET", "DELETE"])
         def question_manage(question_id):
             question_id = int(question_id)
             question_key = list(self.config.question_map.keys())[question_id]
-            question = self.config.question_map[question_key]
-            return render_template(
-                'question_manage.html',
-                bob_version=bob.__version__,
-                question=question,
-                id=question_id
-            )
+            if request.method == "GET":
+                question = self.config.question_map[question_key]
+                return render_template(
+                    "question_manage.html",
+                    bob_version=bob.__version__,
+                    question=question,
+                    id=question_id
+                )
+            elif request.method == "DELETE":
+                self.config.question_map.pop(question_key)
+                return None
 
         self.process = threading.Thread(
             target=self.app.run,

@@ -40,7 +40,13 @@
 
         <script>
             function removeQuestion() {
-
+                fetch(location.href, {
+                    method: 'DELETE'
+                }).then(response => {
+                    if (response.ok) {
+                        location.href = "/questions"
+                    }
+                })
             }
         </script>
 
