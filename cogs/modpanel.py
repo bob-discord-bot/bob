@@ -15,7 +15,16 @@ class ModPanel(commands.Cog):
 
         @self.app.route("/")
         def index():
-            return render_template('index.html', bob_version=bob.__version__)
+            responses = len([response for question in bob.question_map.values() for response in question.responses])
+            return render_template(
+                'index.html',
+                bob_version=bob.__version__,
+                questions=len(bob.question_map.keys()),
+                responses=responses,
+                guilds=len(self.client.guilds),
+                users=len(self.client.users),
+                shards=self.client.shard_count
+            )
 
         self.process = multiprocessing.Process(
             target=self.app.run,
