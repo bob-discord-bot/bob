@@ -2,12 +2,12 @@ import string
 
 
 def sanitize_question(content: str) -> str:
-    return content.lower().translate(str.maketrans('', '', string.punctuation))
+    return content.lower().translate(str.maketrans('', '', string.punctuation)).strip(" \n")
 
 
 class Response:
     def __init__(self, response: str):
-        self.text = response
+        self.text = response.strip(" \n")
         self.count = 1
 
     def __repr__(self):
