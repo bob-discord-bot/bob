@@ -67,9 +67,9 @@ class Config(commands.Cog):
 
         self.logger.debug(f"{responses} responses, updating status...")
         game = discord.Activity(
-            type=discord.ActivityType.listening,
-            name=f"{len(self.question_map.keys())} questions and {responses} responses in "
-                 f"{len(self.client.guilds)} servers // bob {bob.__version__} // {self.client.command_prefix}help"
+            type=discord.ActivityType.playing,
+            name=f"bob v{bob.__version__} // {self.client.command_prefix}help // {len(self.question_map.keys())} "
+                 f"questions and {responses} responses in {len(self.client.guilds)} servers"
         )
         await self.client.change_presence(activity=game)
 
