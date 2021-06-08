@@ -14,7 +14,7 @@ class LaR(commands.Cog):
         self.logger.debug("registered.")
 
     async def learn(self, message: discord.Message):
-        if message.author.id in self.config.config["optout"]:
+        if message.author.id in self.config.config["optout"] or message.author.id in self.config.config["blacklist"]:
             return
 
         if message.reference:
@@ -43,8 +43,7 @@ class LaR(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
-        if (message.author.bot or message.is_system() or message.guild is None
-                or message.author.id in self.config.config["blacklist"]):
+        if message.author.bot or message.is_system() or message.guild is None:
             return
 
         await self.learn(message)
