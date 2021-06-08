@@ -2,3 +2,4 @@ discord.py
 python-Levenshtein
 flask
 nest-asyncio
+requests

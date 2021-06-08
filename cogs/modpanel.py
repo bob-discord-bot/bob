@@ -1,7 +1,8 @@
 import bob
 import logging
-import subprocess
+import requests
 import threading
+import subprocess
 import nest_asyncio
 from cogs.config import Config
 from discord.ext import commands
@@ -102,9 +103,13 @@ class ModPanel(commands.Cog):
 
         @self.app.route("/maintenance")
         def maintenance():
+            releases = requests.get("https://api.github.com/repos/omaemae/bob/releases").json()
+
             return render_template(
                 "maintenance.html",
-                bob_version=bob.__version__
+                bob_version=bob.__version__,
+                latest_version=releases[0]["name"],
+                out_of_date=releases[0]["name"] != "v" + bob.__version__
             )
 
         @self.app.route("/maintenance/stop")

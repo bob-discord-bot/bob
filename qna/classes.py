@@ -6,8 +6,12 @@ def sanitize_question(content: str) -> str:
 
 
 class Response:
-    def __init__(self, response: str):
+    def __init__(self, response: str, guild: int, channel: int, message: int, author: int):
         self.text = response.strip(" \n")
+        self.guild = guild
+        self.channel = channel
+        self.message = message
+        self.author = author
         self.count = 1
 
     def __repr__(self):
@@ -20,8 +24,12 @@ class Response:
 
 
 class Question:
-    def __init__(self, question: str):
+    def __init__(self, question: str, guild: int, channel: int, message: int, author: int):
         self.text = question
+        self.guild = guild
+        self.channel = channel
+        self.message = message
+        self.author = author
         self.responses = []
 
     def __repr__(self):
