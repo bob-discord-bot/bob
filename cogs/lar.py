@@ -23,9 +23,6 @@ class LaR(commands.Cog):
             except discord.NotFound:
                 return
 
-            if reply.author.bot:
-                return
-
             content = qna.classes.sanitize_question(reply.clean_content) + " " + \
                 " ".join([attachment.url for attachment in reply.attachments])
             if content not in self.config.question_map.keys():
@@ -41,10 +38,7 @@ class LaR(commands.Cog):
                 content = qna.classes.sanitize_question(message.clean_content)
                 question = qna.helpers.get_closest_question(list(self.config.question_map.values()), content)
                 response = qna.helpers.pick_response(question)
-                try:
-                    await message.reply(response.text)
-                except discord.errors.HTTPException:
-                    return
+                await message.reply(response.text or "i don't know what to say")
                 self.logger.debug(f"reply: {message.clean_content} -> {response.text}")
 
     @commands.Cog.listener()

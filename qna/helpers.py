@@ -1,10 +1,7 @@
-import string
-
-import Levenshtein
-
-from .classes import Question, Response
-import typing
 import random
+import typing
+import Levenshtein
+from .classes import Question, Response
 
 
 def calculate_popularity(question: Question) -> typing.Dict[Response, float]:
