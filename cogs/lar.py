@@ -1,5 +1,6 @@
 # LaR: Learn and Reply
 import qna
+import asyncio
 import discord
 import logging
 from cogs.config import Config
@@ -33,13 +34,20 @@ class LaR(commands.Cog):
             self.logger.debug(f"save: {reply.clean_content} -> {message.clean_content}")
 
     async def reply(self, message: discord.Message):
-        if str(message.guild.id) in self.config.config["guilds"].keys():
-            if message.channel.id == self.config.config["guilds"][str(message.guild.id)]["channel"]:
+        guild: discord.Guild = message.guild
+        channel: discord.TextChannel = message.channel
+
+        if str(guild.id) in self.config.config["guilds"].keys():
+            if channel.id == self.config.config["guilds"][str(guild.id)]["channel"]:
                 content = qna.classes.sanitize_question(message.clean_content)
                 question = qna.helpers.get_closest_question(list(self.config.question_map.values()), content)
                 response = qna.helpers.pick_response(question)
-                await message.reply(response.text or "i don't know what to say")
-                self.logger.debug(f"reply: {message.clean_content} -> {response.text}")
+
+                async with channel.typing():
+                    text = response.text or "i don't know what to say"
+                    await asyncio.sleep(len(text) / 20)
+                    await message.reply(text)
+                    self.logger.debug(f"reply: {message.clean_content} -> {response.text}")
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
