@@ -45,7 +45,7 @@ class LaR(commands.Cog):
 
                 async with channel.typing():
                     text = response.text or "i don't know what to say"
-                    await asyncio.sleep(len(text) / 20)
+                    await asyncio.sleep(min(len(text) / 20, 10))
                     await message.reply(text)
                     self.logger.debug(f"reply: {message.clean_content} -> {response.text}")
 
