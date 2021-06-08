@@ -38,6 +38,7 @@
         <div class="container mt-4 mb-4">
             <h1>managing question #{{ id }}</h1>
             <p>{{ question.text }}</p>
+
             <h2>responses</h2>
             <div class="accordion mb-4" id="responseAccordion">
                 {% for response in question.responses %}
@@ -49,12 +50,27 @@
                         </h2>
                         <div id="responseC{{ loop.index }}" class="accordion-collapse collapse" data-bs-parent="#responseAccordion">
                             <div class="accordion-body">
+                                <h3>discord IDs</h3>
+                                <ul>
+                                    <li>guild: {{ response.guild }}</li>
+                                    <li>channel: {{ response.channel }}</li>
+                                    <li>message: {{ response.message }}</li>
+                                    <li>author: {{ response.author }}</li>
+                                </ul>
                                 <button type="button" class="btn btn-danger" onclick="removeResponse({{ loop.index0 }})">remove</button>
                             </div>
                         </div>
                     </div>
                 {% endfor %}
             </div>
+
+            <h2>discord IDs</h2>
+            <ul>
+                <li>guild: {{ question.guild }}</li>
+                <li>channel: {{ question.channel }}</li>
+                <li>message: {{ question.message }}</li>
+                <li>author: {{ question.author }}</li>
+            </ul>
 
             <h2>actions</h2>
             <button type="button" class="btn btn-danger" onclick="removeQuestion()">remove question</button>

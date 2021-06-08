@@ -27,10 +27,22 @@ class LaR(commands.Cog):
             content = qna.classes.sanitize_question(reply.clean_content) + " " + \
                 " ".join([attachment.url for attachment in reply.attachments])
             if content not in self.config.question_map.keys():
-                self.config.question_map.update({content: qna.classes.Question(content)})
+                self.config.question_map.update({content: qna.classes.Question(
+                    content,
+                    reply.guild.id,
+                    reply.channel.id,
+                    reply.id,
+                    reply.author.id
+                )})
             response_content = message.clean_content + " " + \
                 " ".join([attachment.url for attachment in message.attachments])
-            self.config.question_map[content].add_response(qna.classes.Response(response_content))
+            self.config.question_map[content].add_response(qna.classes.Response(
+                response_content,
+                message.guild.id,
+                message.channel.id,
+                message.id,
+                message.author.id
+            ))
             self.logger.debug(f"save: {reply.clean_content} -> {message.clean_content}")
 
     async def reply(self, message: discord.Message):
