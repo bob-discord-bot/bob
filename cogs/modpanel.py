@@ -30,6 +30,7 @@ class ModPanel(commands.Cog):
                 questions=len(self.config.question_map.keys()),
                 responses=responses,
                 guilds=len(self.client.guilds),
+                users=len(self.config.config["optin"]),
                 shards=self.client.shard_count
             )
 

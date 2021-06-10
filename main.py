@@ -2,6 +2,7 @@ import bob
 import discord
 import logging
 import argparse
+import traceback
 from discord.ext import commands
 
 parser = argparse.ArgumentParser(description=f"bob {bob.__version__}")
@@ -62,15 +63,21 @@ async def on_command_error(ctx: commands.Context, error):
         )
         return await ctx.reply(embed=embed)
 
+    else:
+        traceback.print_exception(type(error), error, error.__traceback__)
+
 
 @client.event
 async def on_ready():
     client.load_extension("cogs.config")
+
     client.load_extension("cogs.lar")
-    client.load_extension("cogs.invite")
     client.load_extension("cogs.configuration")
+    client.load_extension("cogs.optin")
+
+    client.load_extension("cogs.usercommands")
     client.load_extension("cogs.help")
-    client.load_extension("cogs.optout")
+
     client.load_extension("cogs.modpanel")
     logger.info(f"bob v{bob.__version__} is ready!")
 

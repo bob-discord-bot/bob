@@ -15,22 +15,25 @@ class Config(commands.Cog):
         self.config = {"guilds": {}, "optout": [], "question_limit": 100000, "blacklist": []}
         self.question_map = {}
 
-        self.logger.debug("loading questions...")
-        with open("data.json") as file:
-            questions = qna.json.json_to_questions(file.read())
-        for question in questions:
-            self.question_map.update({question.text: question})
-        del questions
-        self.logger.debug(f"loaded {len(self.question_map.keys())} questions.")
+        if os.path.exists("data.json"):
+            self.logger.debug("loading questions...")
+            with open("data.json") as file:
+                questions = qna.json.json_to_questions(file.read())
+            for question in questions:
+                self.question_map.update({question.text: question})
+            del questions
+            self.logger.debug(f"loaded {len(self.question_map.keys())} questions.")
 
-        self.logger.debug("loading config...")
         if os.path.exists("config.json"):
+            self.logger.debug("loading config...")
             with open("config.json") as file:
-                self.config = json.load(file)
+                self.config: dict = json.load(file)
                 if "guilds" not in self.config.keys():
                     self.config.update({"guilds": {}})
-                if "optout" not in self.config.keys():
-                    self.config.update({"optout": []})
+                if "optin" not in self.config.keys():
+                    self.config.update({"optin": []})
+                if "optout" in self.config.keys():
+                    self.config.pop("optout")
                 if "question_limit" not in self.config.keys():
                     self.config.update({"question_limit": 100000})
                 if "blacklist" not in self.config.keys():

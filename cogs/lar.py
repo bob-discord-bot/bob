@@ -15,7 +15,7 @@ class LaR(commands.Cog):
         self.logger.debug("registered.")
 
     async def learn(self, message: discord.Message):
-        if message.author.id in self.config.config["optout"] or message.author.id in self.config.config["blacklist"]:
+        if message.author.id not in self.config.config["optin"] or message.author.id in self.config.config["blacklist"]:
             return
 
         if message.reference:

@@ -1,6 +1,7 @@
 import bob
 import discord
 import logging
+import datetime
 from discord.ext import commands
 
 
@@ -24,18 +25,20 @@ class Help(commands.Cog):
                 embed = discord.Embed(
                     title=f"bob help | {self.client.command_prefix}{target_command.name}",
                     description=target_command.description or target_command.brief,
-                    color=bob.blue_color
+                    color=bob.blue_color,
+                    timestamp=datetime.datetime.now()
                 )
                 embed.add_field(
                     name="usage",
                     value=target_command.usage or f"{self.client.command_prefix}{target_command.name} "
                                                   f"{target_command.signature}"
                 )
+                embed.set_footer(text=f"bob v{bob.__version__}", icon_url=self.client.user.avatar_url)
 
                 await ctx.reply(embed=embed)
             return
 
-        embed = discord.Embed(title="bob help", color=bob.blue_color)
+        embed = discord.Embed(title="bob help", color=bob.blue_color, timestamp=datetime.datetime.now())
         for command in sorted(self.client.commands, key=lambda c: c.name):
             if command.hidden:
                 continue
@@ -51,6 +54,8 @@ class Help(commands.Cog):
                     value=command.brief or "no description.",
                     inline=False
                 )
+        embed.set_footer(text=f"bob v{bob.__version__}", icon_url=self.client.user.avatar_url)
+
         await ctx.reply(embed=embed)
 
 
