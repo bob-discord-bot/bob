@@ -66,7 +66,7 @@ class Config(commands.Cog):
             question = self.question_map[question_key]
             if question.author in self.config["blacklist"]:
                 to_pop.append(question_key)
-                return
+                continue
 
             responses_to_remove = []
             for response in question.responses:
