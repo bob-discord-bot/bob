@@ -56,21 +56,36 @@ class Config(commands.Cog):
     @tasks.loop(minutes=1.0)
     async def periodic_data_clean_and_save(self):
         self.logger.debug("cleaning data...")
-        removed = 0
+        removed_questions = 0
+        removed_responses = 0
         while len(self.question_map.values()) > self.config["question_limit"]:
             self.question_map.pop(list(self.question_map.keys())[0])
-            removed += 1
+            removed_questions += 1
         to_pop = []
         for question_key in self.question_map.keys():
             question = self.question_map[question_key]
             if question.author in self.config["blacklist"]:
                 to_pop.append(question_key)
+                return
+
+            responses_to_remove = []
+            for response in question.responses:
+                if response.author in self.config["blacklist"]:
+                    responses_to_remove.append(response)
+
+            for index in responses_to_remove:
+                question.responses.remove(index)
+
+            removed_responses += len(responses_to_remove)
+
+            if len(question.responses) == 0:
+                to_pop.append(question_key)
 
         for key in to_pop:
             self.question_map.pop(key)
 
-        removed += len(to_pop)
-        self.logger.debug("removed %d questions, saving data...", removed)
+        removed_questions += len(to_pop)
+        self.logger.debug("removed %d questions and %d responses, saving data...", removed_questions, removed_responses)
         self.save_data()
 
     @tasks.loop(minutes=1.0)
