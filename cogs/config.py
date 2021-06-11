@@ -60,6 +60,16 @@ class Config(commands.Cog):
         while len(self.question_map.values()) > self.config["question_limit"]:
             self.question_map.pop(list(self.question_map.keys())[0])
             removed += 1
+        to_pop = []
+        for question_key in self.question_map.keys():
+            question = self.question_map[question_key]
+            if question.author in self.config["blacklist"]:
+                to_pop.append(question_key)
+
+        for key in to_pop:
+            self.question_map.pop(key)
+
+        removed += len(to_pop)
         self.logger.debug("removed %d questions, saving data...", removed)
         self.save_data()
 

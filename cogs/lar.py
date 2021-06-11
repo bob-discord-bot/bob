@@ -24,6 +24,9 @@ class LaR(commands.Cog):
             except discord.NotFound:
                 return
 
+            if reply.author.id not in self.config.config["optin"]:
+                return
+
             content = qna.classes.sanitize_question(reply.clean_content) + " " + \
                 " ".join([attachment.url for attachment in reply.attachments])
             if content not in self.config.question_map.keys():
