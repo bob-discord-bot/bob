@@ -79,6 +79,8 @@ async def on_ready():
     client.load_extension("cogs.help")
 
     client.load_extension("cogs.modpanel")
+
+    client.load_extension("jishaku")
     logger.info(f"bob v{bob.__version__} is ready!")
 
 
