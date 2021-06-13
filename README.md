@@ -10,4 +10,5 @@ bob is a plug-n-play Discord chat bot
 - guild blacklist
 - clean up the HTML clutter in /templates, arguably a React app would be great but im too tired to do it so if you want
   to then go ahead lmfao
+- add button (or some other way) to report a reply
 - (optional) move from JSON files to a database, preferably SQLite
