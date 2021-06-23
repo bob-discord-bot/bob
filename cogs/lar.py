@@ -66,7 +66,7 @@ class LaR(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
-        if message.author.bot or message.is_system() or message.guild is None:
+        if message.author.bot or message.is_system() or message.guild is None or message.content.startswith("//"):
             return
 
         await self.learn(message)
