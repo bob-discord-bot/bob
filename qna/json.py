@@ -55,11 +55,16 @@ def dict_to_question(question_dict: dict) -> Question:
     return out
 
 
-def questions_to_json(questions: typing.List[Question]) -> str:
+def questions_to_list(questions: typing.List[Question]) -> typing.List[dict]:
     out = []
     for question in questions:
         out.append(question_to_dict(question))
 
+    return out
+
+
+def questions_to_json(questions: typing.List[Question]) -> str:
+    out = questions_to_list(questions)
     return json.dumps(out, separators=(',', ':'))
 
 

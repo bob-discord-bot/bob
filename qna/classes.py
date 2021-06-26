@@ -2,7 +2,7 @@ import string
 
 
 def sanitize_question(content: str) -> str:
-    return content.lower().translate(str.maketrans('', '', string.punctuation)).strip(" \n")
+    return content.lower().translate(str.maketrans('', '', string.punctuation + " \n"))
 
 
 class Response:
