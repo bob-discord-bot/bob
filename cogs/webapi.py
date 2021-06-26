@@ -1,6 +1,5 @@
 import bob
 import logging
-import requests
 import threading
 import subprocess
 import nest_asyncio
