@@ -7,6 +7,14 @@ def blacklist_check(ctx: commands.Context):
     return ctx.author.id not in ctx.cog.config.config["blacklist"]
 
 
+def optin_check(ctx: commands.Context):
+    return ctx.author.id in ctx.cog.config.config["optin"]
+
+
+def optout_check(ctx: commands.Context):
+    return not optin_check(ctx)
+
+
 class OptIn(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
@@ -15,6 +23,7 @@ class OptIn(commands.Cog):
         self.logger.debug("registered.")
 
     @commands.check(blacklist_check)
+    @commands.check(optin_check)
     @commands.command(brief="opt-out of bob message collection")
     async def optout(self, ctx: commands.Context):
         if ctx.author.id not in self.config.config["optin"]:
@@ -24,6 +33,7 @@ class OptIn(commands.Cog):
         await ctx.reply("you're now opted out of bob's message collection.")
 
     @commands.check(blacklist_check)
+    @commands.check(optout_check)
     @commands.command(brief="opt-in to bob message collection")
     async def optin(self, ctx: commands.Context):
         if ctx.author.id in self.config.config["optin"]:

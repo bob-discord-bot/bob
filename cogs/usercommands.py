@@ -16,7 +16,7 @@ class UserCommands(commands.Cog):
         embed = discord.Embed(
             title="here you go!",
             description=f"you can invite me to your server by [clicking on this link](https://discord.com/api/oauth2/"
-                        f"authorize?client_id={self.client.user.id}&permissions=3072&scope=bot)",
+                        f"authorize?client_id={self.client.user.id}&permissions=281616&scope=bot).",
             color=bob.blue_color,
             timestamp=datetime.datetime.now()
         )
@@ -28,7 +28,7 @@ class UserCommands(commands.Cog):
     async def support(self, ctx: commands.Context):
         embed = discord.Embed(
             title="here you go!",
-            description=f"you can join the support server by [clicking on this link](https://discord.gg/uuqZYPYrMj)",
+            description=f"you can join the support server by [clicking on this link](https://discord.gg/uuqZYPYrMj).",
             color=bob.blue_color,
             timestamp=datetime.datetime.now()
         )

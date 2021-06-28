@@ -44,16 +44,16 @@ class Help(commands.Cog):
                 continue
 
             try:
-                can_run = await command.can_run(ctx)
+                if not await command.can_run(ctx):
+                    continue
             except commands.CommandError:
-                can_run = False
+                continue
 
-            if can_run:
-                embed.add_field(
-                    name=self.client.command_prefix + command.name,
-                    value=command.brief or "no description.",
-                    inline=False
-                )
+            embed.add_field(
+                name=self.client.command_prefix + command.name,
+                value=command.brief or "no description.",
+                inline=False
+            )
         embed.set_footer(text=f"bob v{bob.__version__}", icon_url=self.client.user.avatar_url)
 
         await ctx.reply(embed=embed)
