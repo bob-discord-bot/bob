@@ -47,6 +47,7 @@ class WebAPI(commands.Cog):
         """
         @self.app.route("/api/questions")
         def question_list():
+            return "", 400
             questions_list = qna.json.questions_to_list(self.config.question_map.values())
             questions = {k: questions_list[k] for k in range(len(questions_list))}
             search = request.args.get('search')
@@ -61,6 +62,7 @@ class WebAPI(commands.Cog):
         """
         @self.app.route("/api/questions/<question_id>")
         def question_info(question_id):
+            return "", 400
             question_id = int(question_id)
             question_key = list(self.config.question_map.keys())[question_id]
             return qna.json.question_to_dict(self.config.question_map[question_key])
@@ -72,6 +74,7 @@ class WebAPI(commands.Cog):
         """
         @self.app.route("/api/questions/<question_id>", methods=["DELETE"])
         def question_delete(question_id):
+            return "", 400
             question_id = int(question_id)
             question_key = list(self.config.question_map.keys())[question_id]
             self.config.question_map.pop(question_key)
@@ -84,6 +87,7 @@ class WebAPI(commands.Cog):
         """
         @self.app.route("/api/questions/<question_id>/responses/<response_id>", methods=["DELETE"])
         def delete_response_from_question(question_id, response_id):
+            return "", 400
             question_id = int(question_id)
             response_id = int(response_id)
             question_key = list(self.config.question_map.keys())[question_id]
@@ -97,6 +101,7 @@ class WebAPI(commands.Cog):
         """
         @self.app.route("/api/blacklist")
         def blacklist():
+            return "", 400
             return jsonify(self.config.config["blacklist"])
 
         """
@@ -106,6 +111,7 @@ class WebAPI(commands.Cog):
         """
         @self.app.route("/api/blacklist", methods=["POST"])
         def add_to_blacklist():
+            return "", 400
             data = request.get_json()
             self.config.config["blacklist"].append(int(data["id"]))
             return "", 204
@@ -117,6 +123,7 @@ class WebAPI(commands.Cog):
         """
         @self.app.route("/api/blacklist/<userid>", methods=["DELETE"])
         def delete_from_blacklist(userid):
+            return "", 400
             userid = int(userid)
             self.config.config["blacklist"].remove(userid)
             return "", 204
@@ -130,6 +137,7 @@ class WebAPI(commands.Cog):
         """
         @self.app.route("/api/maintenance/stop")
         def stop():
+            return "", 400
             self.client.loop.run_until_complete(self.client.close())
             return "", 204
 
@@ -142,6 +150,7 @@ class WebAPI(commands.Cog):
         """
         @self.app.route("/api/maintenance/update")
         def update():
+            return "", 400
             subprocess.run(["git", "pull"])
             subprocess.run(["pip", "install", "-r", "requirements.txt"])
             self.client.loop.run_until_complete(self.client.close())
