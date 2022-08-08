@@ -61,6 +61,9 @@ class LaR(commands.Cog):
                     question = qna.helpers.get_closest_question(list(self.config.question_map.values()), content)
                     response = qna.helpers.pick_response(question)
                     text = response.text or placeholder
+                if message.content.startswith(self.client.command_prefix):
+                    text += "\n(psst, i don't listen to commands here! if you want to run a command, " \
+                            "go to another channel.)"
                 await message.reply(text)
                 self.logger.debug(f"reply: {message.clean_content} -> {text}")
 
