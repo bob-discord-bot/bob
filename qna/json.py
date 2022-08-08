@@ -1,11 +1,31 @@
 import json
+import base64
+import logging
 import typing
+import os.path
+import nacl.secret
+
 from qna.classes import Question, Response
+
+logger = logging.getLogger('qna.json')
+
+uses_encryption = True
+if not os.path.exists(".key"):
+    logger.debug("Didn't find key, assuming data is not encrypted. Will encrypt when saving.")
+    uses_encryption = False
+    key: bytes = nacl.utils.random(nacl.secret.SecretBox.KEY_SIZE)
+    with open(".key", "wb+") as file:
+        file.write(key)
+else:
+    with open(".key", 'rb') as file:
+        key = file.read()
+
+box = nacl.secret.SecretBox(key)
 
 
 def response_to_dict(response: Response) -> dict:
     data = {
-        'text': response.text,
+        'text': base64.b64encode(box.encrypt(response.text.encode())).decode(),
         'count': response.count,
         'guild': response.guild,
         'channel': response.channel,
@@ -17,7 +37,8 @@ def response_to_dict(response: Response) -> dict:
 
 def dict_to_response(response_dict: dict) -> Response:
     out = Response(
-        response_dict['text'],
+        (box.decrypt(base64.b64decode(response_dict['text'].encode())).decode()
+            if uses_encryption else response_dict['text']),
         response_dict.get("guild", 0),
         response_dict.get("channel", 0),
         response_dict.get("message", 0),
@@ -29,7 +50,7 @@ def dict_to_response(response_dict: dict) -> Response:
 
 def question_to_dict(question: Question) -> dict:
     data = {
-        'text': question.text,
+        'text': base64.b64encode(box.encrypt(question.text.encode())).decode(),
         'responses': [],
         'guild': question.guild,
         'channel': question.channel,
@@ -44,7 +65,8 @@ def question_to_dict(question: Question) -> dict:
 
 def dict_to_question(question_dict: dict) -> Question:
     out = Question(
-        question_dict['text'],
+        (box.decrypt(base64.b64decode(question_dict['text'].encode())).decode()
+         if uses_encryption else question_dict['text']),
         question_dict.get("guild", 0),
         question_dict.get("channel", 0),
         question_dict.get("message", 0),

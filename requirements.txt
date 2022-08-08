@@ -5,3 +5,4 @@ flask-cors
 nest-asyncio
 requests
 jishaku
+pynacl
