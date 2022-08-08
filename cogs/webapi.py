@@ -1,3 +1,4 @@
+import os.path
 import random
 import string
 
@@ -23,6 +24,9 @@ class WebAPI(commands.Cog):
         self.config: Config = client.get_cog("Config")
         self.app = Flask("WebAPI")
         self.login_key = ""
+        if os.path.exists(".login_key"):
+            with open(".login_key") as file:
+                self.login_key = file.read()
         CORS(self.app)
         nest_asyncio.apply(self.client.loop)
 
@@ -76,11 +80,10 @@ class WebAPI(commands.Cog):
         def question_list():
             if not auth_check():
                 return "", 400
-            questions_list = qna.json.questions_to_list(self.config.question_map.values())
-            questions = {k: questions_list[k] for k in range(len(questions_list))}
+            questions = qna.json.questions_to_list(self.config.question_map.values(), encrypt=False)
             search = request.args.get('search')
             if search:
-                questions = {k: v for k, v in questions.items() if search in v["text"]}
+                questions = {q for q in questions if search in q["text"]}
             return questions
 
         """
@@ -94,7 +97,7 @@ class WebAPI(commands.Cog):
                 return "", 400
             question_id = int(question_id)
             question_key = list(self.config.question_map.keys())[question_id]
-            return qna.json.question_to_dict(self.config.question_map[question_key])
+            return qna.json.question_to_dict(self.config.question_map[question_key], encrypt=False)
 
         """
         Deletes a question.

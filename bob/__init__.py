@@ -1,3 +1,3 @@
-__version__ = "2.2.1 rc.2"
+__version__ = "2.3.0 beta.1"
 blue_color = 0x2273E6
 red_color = 0xE82E3E

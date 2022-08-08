@@ -23,9 +23,9 @@ else:
 box = nacl.secret.SecretBox(key)
 
 
-def response_to_dict(response: Response) -> dict:
+def response_to_dict(response: Response, encrypt=True) -> dict:
     data = {
-        'text': base64.b64encode(box.encrypt(response.text.encode())).decode(),
+        'text': base64.b64encode(box.encrypt(response.text.encode())).decode() if encrypt else response.text,
         'count': response.count,
         'guild': response.guild,
         'channel': response.channel,
@@ -48,9 +48,9 @@ def dict_to_response(response_dict: dict) -> Response:
     return out
 
 
-def question_to_dict(question: Question) -> dict:
+def question_to_dict(question: Question, encrypt=True) -> dict:
     data = {
-        'text': base64.b64encode(box.encrypt(question.text.encode())).decode(),
+        'text': base64.b64encode(box.encrypt(question.text.encode())).decode() if encrypt else question.text,
         'responses': [],
         'guild': question.guild,
         'channel': question.channel,
@@ -58,7 +58,7 @@ def question_to_dict(question: Question) -> dict:
         'author': question.author
     }
     for response in question.responses:
-        data['responses'].append(response_to_dict(response))
+        data['responses'].append(response_to_dict(response, encrypt=encrypt))
 
     return data
 
@@ -77,10 +77,10 @@ def dict_to_question(question_dict: dict) -> Question:
     return out
 
 
-def questions_to_list(questions: typing.List[Question]) -> typing.List[dict]:
+def questions_to_list(questions: typing.List[Question], encrypt=True) -> typing.List[dict]:
     out = []
     for question in questions:
-        out.append(question_to_dict(question))
+        out.append(question_to_dict(question, encrypt=encrypt))
 
     return out
 
