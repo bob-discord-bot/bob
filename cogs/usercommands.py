@@ -60,6 +60,43 @@ class UserCommands(commands.Cog):
                 del self.to_wipe[ctx.author.id]
                 await self.clean(ctx)
 
+    @commands.command(brief="Check the bot's statistics.")
+    async def stats(self, ctx: commands.Context):
+        user_questions = 0
+        user_responses = 0
+        responses_total = 0
+        for question_key in self.config.question_map:
+            question = self.config.question_map[question_key]
+            if question.author == ctx.author.id:
+                user_questions += 1
+            for response in question.responses:
+                if response.author == ctx.author.id:
+                    user_responses += 1
+            responses_total += len(question.responses)
+        embed = discord.Embed(
+            title="Statistics",
+            color=bob.blue_color,
+            timestamp=datetime.datetime.now()
+        )
+        embed.add_field(
+            name="Prompts",
+            value=str(len(self.config.question_map))
+        )
+        embed.add_field(
+            name="Responses",
+            value=str(responses_total)
+        )
+        embed.add_field(
+            name="Your prompts",
+            value=str(user_questions)
+        )
+        embed.add_field(
+            name="Your responses",
+            value=str(user_responses)
+        )
+        embed.set_footer(text=f"bob v{bob.__version__}", icon_url=self.client.user.display_avatar.url)
+        await ctx.reply(embed=embed)
+
 
 async def setup(client: commands.Bot):
     await client.add_cog(UserCommands(client))
