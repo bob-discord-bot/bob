@@ -1,4 +1,5 @@
 import random
+import string
 
 import bob
 import logging
@@ -44,7 +45,7 @@ class WebAPI(commands.Cog):
         """
         @self.app.route("/api/auth/start", methods=["POST"])
         def auth_start():
-            self.login_key = "".join(random.choices())
+            self.login_key = "".join(random.choices(string.ascii_letters + string.digits + string.punctuation, k=128))
             with open(".login_key", "w+") as file:
                 file.write(self.login_key)
             return ""
