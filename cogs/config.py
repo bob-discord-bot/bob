@@ -2,10 +2,15 @@ import os
 import bob
 import qna
 import json
+import time
 import discord
 import logging
 from discord.ext import tasks
 from discord.ext import commands
+
+
+def snowflake_to_timestamp(snowflake: int):
+    return ((snowflake >> 22) + 1420070400000) / 1000
 
 
 class Config(commands.Cog):
@@ -67,10 +72,15 @@ class Config(commands.Cog):
             if question.author in self.config["blacklist"]:
                 to_pop.append(question_key)
                 continue
+            if time.time() > snowflake_to_timestamp(question.message) + (30 * 60 * 60 * 24):
+                to_pop.append(question_key)
+                continue
 
             responses_to_remove = []
             for response in question.responses:
                 if response.author in self.config["blacklist"]:
+                    responses_to_remove.append(response)
+                if time.time() > snowflake_to_timestamp(response.message) + (30 * 60 * 60 * 24):
                     responses_to_remove.append(response)
 
             for index in responses_to_remove:
