@@ -13,7 +13,11 @@ logging.basicConfig(
     level=logging.DEBUG if args.debug else logging.INFO,
     format='[%(asctime)s / %(levelname)s] %(name)s: %(message)s'
 )
-client = commands.AutoShardedBot(command_prefix="bc." if args.debug else "b.", help_command=None)
+
+intents = discord.Intents.default()
+intents.message_content = True
+client = commands.AutoShardedBot(command_prefix="bc." if args.debug else "b.", help_command=None,
+                                 intents=intents)
 
 logger = logging.getLogger("bob")
 
@@ -69,18 +73,18 @@ async def on_command_error(ctx: commands.Context, error):
 
 @client.event
 async def on_ready():
-    client.load_extension("cogs.config")
-
-    client.load_extension("cogs.lar")
-    client.load_extension("cogs.configuration")
-    client.load_extension("cogs.optin")
-
-    client.load_extension("cogs.usercommands")
-    client.load_extension("cogs.help")
-
-    client.load_extension("cogs.webapi")
-
-    client.load_extension("jishaku")
+    cogs = [
+        "cogs.config",
+        "cogs.lar",
+        "cogs.configuration",
+        "cogs.optin",
+        "cogs.usercommands",
+        "cogs.help",
+        "cogs.webapi",
+        "jishaku"
+    ]
+    for cog in cogs:
+        await client.load_extension(cog)
     logger.info(f"bob v{bob.__version__} is ready!")
 
 

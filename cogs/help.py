@@ -33,7 +33,7 @@ class Help(commands.Cog):
                     value=target_command.usage or f"{self.client.command_prefix}{target_command.name} "
                                                   f"{target_command.signature}"
                 )
-                embed.set_footer(text=f"bob v{bob.__version__}", icon_url=self.client.user.avatar_url)
+                embed.set_footer(text=f"bob v{bob.__version__}", icon_url=self.client.user.display_avatar.url)
 
                 await ctx.reply(embed=embed)
             return
@@ -54,10 +54,10 @@ class Help(commands.Cog):
                 value=command.brief or "no description.",
                 inline=False
             )
-        embed.set_footer(text=f"bob v{bob.__version__}", icon_url=self.client.user.avatar_url)
+        embed.set_footer(text=f"bob v{bob.__version__}", icon_url=self.client.user.display_avatar.url)
 
         await ctx.reply(embed=embed)
 
 
-def setup(client: commands.Bot):
-    client.add_cog(Help(client))
+async def setup(client: commands.Bot):
+    await client.add_cog(Help(client))

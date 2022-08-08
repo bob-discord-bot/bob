@@ -1,6 +1,7 @@
-discord.py
+git+https://github.com/Rapptz/discord.py
 python-Levenshtein
 flask
+flask-cors
 nest-asyncio
 requests
 jishaku

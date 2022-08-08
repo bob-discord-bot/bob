@@ -42,5 +42,5 @@ class Configuration(commands.Cog):
                 await self.update_channel_topic(channel)
 
 
-def setup(client: commands.Bot):
-    client.add_cog(Configuration(client))
+async def setup(client: commands.Bot):
+    await client.add_cog(Configuration(client))

@@ -20,7 +20,7 @@ class UserCommands(commands.Cog):
             color=bob.blue_color,
             timestamp=datetime.datetime.now()
         )
-        embed.set_footer(text=f"bob v{bob.__version__}", icon_url=self.client.user.avatar_url)
+        embed.set_footer(text=f"bob v{bob.__version__}", icon_url=self.client.user.display_avatar.url)
 
         await ctx.reply(embed=embed)
 
@@ -32,7 +32,7 @@ class UserCommands(commands.Cog):
             color=bob.blue_color,
             timestamp=datetime.datetime.now()
         )
-        embed.set_footer(text=f"bob v{bob.__version__}", icon_url=self.client.user.avatar_url)
+        embed.set_footer(text=f"bob v{bob.__version__}", icon_url=self.client.user.display_avatar.url)
 
         await ctx.reply(embed=embed)
 
@@ -77,10 +77,10 @@ class UserCommands(commands.Cog):
                   "it won't stop bob from replying to you.",
             inline=False
         )
-        embed.set_footer(text=f"bob v{bob.__version__}", icon_url=self.client.user.avatar_url)
+        embed.set_footer(text=f"bob v{bob.__version__}", icon_url=self.client.user.display_avatar.url)
 
         await ctx.reply(embed=embed)
 
 
-def setup(client: commands.Bot):
-    client.add_cog(UserCommands(client))
+async def setup(client: commands.Bot):
+    await client.add_cog(UserCommands(client))

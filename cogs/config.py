@@ -12,7 +12,7 @@ class Config(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
         self.logger = logging.getLogger("cogs.Config")
-        self.config = {"guilds": {}, "optout": [], "question_limit": 100000, "blacklist": []}
+        self.config = {"guilds": {}, "optin": [], "question_limit": 100000, "blacklist": []}
         self.question_map = {}
 
         if os.path.exists("data.json"):
@@ -95,9 +95,9 @@ class Config(commands.Cog):
 
         self.logger.debug(f"{responses} responses, updating status...")
         game = discord.Activity(
-            type=discord.ActivityType.playing,
-            name=f"bob v{bob.__version__} // {self.client.command_prefix}help // {len(self.question_map.keys())} "
-                 f"questions and {responses} responses in {len(self.client.guilds)} servers"
+            type=discord.ActivityType.listening,
+            name=f"your messages | {self.client.command_prefix}help | {len(self.question_map.keys())} prompts and "
+                 f"{responses} responses",
         )
         await self.client.change_presence(activity=game)
 
@@ -106,5 +106,5 @@ class Config(commands.Cog):
         self.save_data()
 
 
-def setup(client: commands.Bot):
-    client.add_cog(Config(client))
+async def setup(client: commands.Bot):
+    await client.add_cog(Config(client))

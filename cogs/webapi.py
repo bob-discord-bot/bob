@@ -7,6 +7,8 @@ import nest_asyncio
 import qna.json
 from cogs.config import Config
 from discord.ext import commands
+
+from flask_cors import CORS
 from flask import Flask, jsonify, request
 
 
@@ -17,6 +19,7 @@ class WebAPI(commands.Cog):
         self.logger.debug("registered.")
         self.config: Config = client.get_cog("Config")
         self.app = Flask("WebAPI")
+        CORS(self.app)
         nest_asyncio.apply(self.client.loop)
 
         """
@@ -152,5 +155,5 @@ class WebAPI(commands.Cog):
         self.process.start()
 
 
-def setup(client: commands.Bot):
-    client.add_cog(WebAPI(client))
+async def setup(client: commands.Bot):
+    await client.add_cog(WebAPI(client))

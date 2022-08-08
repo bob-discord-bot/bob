@@ -73,5 +73,5 @@ class LaR(commands.Cog):
         await self.reply(message)
 
 
-def setup(client: commands.Bot):
-    client.add_cog(LaR(client))
+async def setup(client: commands.Bot):
+    await client.add_cog(LaR(client))

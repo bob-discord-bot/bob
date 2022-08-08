@@ -44,5 +44,5 @@ class OptIn(commands.Cog):
                         "by opting in, you agree to bob's privacy policy. run `b.privacy` for more info.")
 
 
-def setup(client: commands.Bot):
-    client.add_cog(OptIn(client))
+async def setup(client: commands.Bot):
+    await client.add_cog(OptIn(client))
