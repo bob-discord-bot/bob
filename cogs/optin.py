@@ -24,24 +24,24 @@ class OptIn(commands.Cog):
 
     @commands.check(blacklist_check)
     @commands.check(optin_check)
-    @commands.command(brief="opt-out of bob message collection")
+    @commands.command(brief="Opt-out of bob message collection.")
     async def optout(self, ctx: commands.Context):
         if ctx.author.id not in self.config.config["optin"]:
-            return await ctx.reply("you're already opted out!")
+            return await ctx.reply("You're already opted out!")
 
         self.config.config["optin"].remove(ctx.author.id)
-        await ctx.reply("you're now opted out of bob's message collection.")
+        await ctx.reply("You've opted out of bob's message collection.")
 
     @commands.check(blacklist_check)
     @commands.check(optout_check)
-    @commands.command(brief="opt-in to bob message collection")
+    @commands.command(brief="Opt-in to bob message collection.")
     async def optin(self, ctx: commands.Context):
         if ctx.author.id in self.config.config["optin"]:
-            return await ctx.reply("you're already opted in!")
+            return await ctx.reply("You're already opted in!")
 
         self.config.config["optin"].append(ctx.author.id)
-        await ctx.reply("you're now opted into bob's message collection.\n"
-                        "by opting in, you agree to bob's privacy policy. run `b.privacy` for more info.")
+        await ctx.reply("You've opted into bob's message collection!\nBy opting in, "
+                        "you agree to bob's Terms of Service and Privacy Policy: https://bob.omame.xyz/terms.")
 
 
 async def setup(client: commands.Bot):

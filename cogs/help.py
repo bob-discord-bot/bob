@@ -11,7 +11,7 @@ class Help(commands.Cog):
         self.logger = logging.getLogger("cogs.Help")
         self.logger.debug("registered.")
 
-    @commands.command(brief="lists commands and info about them")
+    @commands.command(brief="Lists commands and information about them.")
     async def help(self, ctx: commands.Context, requested_command: str = None):
         if requested_command:
             target_command = None
@@ -20,7 +20,7 @@ class Help(commands.Cog):
                     target_command = command
 
             if not target_command:
-                raise commands.BadArgument(message="command couldn't be found.")
+                raise commands.BadArgument(message="Command couldn't be found.")
             else:
                 embed = discord.Embed(
                     title=f"bob help | {self.client.command_prefix}{target_command.name}",
@@ -40,6 +40,7 @@ class Help(commands.Cog):
 
         embed = discord.Embed(title="bob help", color=bob.blue_color, timestamp=datetime.datetime.now())
         for command in sorted(self.client.commands, key=lambda c: c.name):
+            command: commands.Command
             if command.hidden:
                 continue
 
@@ -51,7 +52,7 @@ class Help(commands.Cog):
 
             embed.add_field(
                 name=self.client.command_prefix + command.name,
-                value=command.brief or "no description.",
+                value=command.brief or "No description.",
                 inline=False
             )
         embed.set_footer(text=f"bob v{bob.__version__}", icon_url=self.client.user.display_avatar.url)

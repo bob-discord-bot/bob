@@ -15,7 +15,7 @@ class Configuration(commands.Cog):
         self.reset_channel_topics.start()
 
     @commands.has_permissions(manage_channels=True)
-    @commands.command(brief="sets the channel bob should talk in")
+    @commands.command(brief="Sets the channel that bob will talk in.")
     async def channel(self, ctx: commands.Context, target_channel: discord.TextChannel):
         self.logger.debug(f"setting guild {ctx.guild.id}'s channel to {target_channel.id}")
         if str(ctx.guild.id) not in self.config.config["guilds"].keys():
@@ -24,14 +24,14 @@ class Configuration(commands.Cog):
             self.config.config["guilds"][str(ctx.guild.id)]["channel"] = target_channel.id
 
         await self.update_channel_topic(self.client.get_channel(target_channel.id))
-        await ctx.reply(f"done! bob will now talk in {target_channel.mention}.")
+        await ctx.reply(f"Bob will now talk in {target_channel.mention}.")
 
     async def update_channel_topic(self, channel: discord.TextChannel):
         try:
-            await channel.edit(topic=f"talk to bob! // bob {bob.__version__} // "
+            await channel.edit(topic=f"talk to bob! | "
                                      f"run **{self.client.command_prefix}help** in an another channel!")
         except discord.Forbidden:
-            self.logger.warning(f"i don't have permissions to update {channel}.")
+            self.logger.debug(f"I don't have permissions to update {channel}.")
 
     @tasks.loop(hours=1)
     async def reset_channel_topics(self):
