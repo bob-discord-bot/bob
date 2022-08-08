@@ -5,3 +5,4 @@ data.json
 config.json
 __pycache__/
 .key
+.login_key
