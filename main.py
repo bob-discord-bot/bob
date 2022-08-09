@@ -1,9 +1,13 @@
+import typing
+
 import bob
 import discord
 import logging
 import argparse
 import traceback
 from discord.ext import commands
+
+from cogs.config import Config
 
 parser = argparse.ArgumentParser(description=f"bob {bob.__version__}")
 parser.add_argument("--debug", "-d", action="store_true", help="enable debug mode")
@@ -36,38 +40,47 @@ async def on_command_error(ctx: commands.Context, error):
 
     elif isinstance(error, commands.MissingRequiredArgument):
         embed = discord.Embed(
-            title="you're missing a required argument!",
-            description="check help for details.",
-            color=bob.red_color
+            title="You're missing a required argument!",
+            description="Check help for details.",
+            color=discord.Color.red()
         )
         return await ctx.reply(embed=embed)
 
     elif isinstance(error, commands.BadArgument):
         embed = discord.Embed(
-            title="i don't think that's correct...",
+            title="I don't think that's correct...",
             description=str(error),
-            color=bob.red_color
+            color=discord.Color.red()
         )
         return await ctx.reply(embed=embed)
 
     elif isinstance(error, commands.MissingPermissions):
-        perms = "\n - ".join(error.missing_perms)
+        perms = "\n - ".join(error.missing_permissions)
         embed = discord.Embed(
-            title="you're missing permissions to run this command.",
-            description=f"you're missing the following permissions:\n{perms}",
-            color=bob.red_color
+            title="You're missing permissions to run this command.",
+            description=f"You're missing the following permissions:\n{perms}",
+            color=discord.Color.red()
         )
         return await ctx.reply(embed=embed)
 
     elif isinstance(error, commands.NotOwner):
         embed = discord.Embed(
-            title="you're missing permissions to run this command.",
-            description=f"only the owner of the bot can run this command.",
-            color=bob.red_color
+            title="You're missing permissions to run this command.",
+            description=f"Only the bot owner can run this command.",
+            color=discord.Color.red()
+        )
+        return await ctx.reply(embed=embed)
+
+    elif isinstance(error, commands.CheckFailure):
+        embed = discord.Embed(
+            title="You're not able to run this command.",
+            description="If you're trying to opt-in, this usually means you are already opted-in.",
+            color=discord.Color.red()
         )
         return await ctx.reply(embed=embed)
 
     else:
+        error: Exception
         traceback.print_exception(type(error), error, error.__traceback__)
 
 
@@ -90,7 +103,7 @@ async def on_ready():
 
 @client.event
 async def on_message(message: discord.Message):
-    config = client.get_cog("Config")
+    config: typing.Union[Config, None] = client.get_cog("Config")
     if message.author.bot or message.is_system() or message.guild is None:
         return
 

@@ -1,4 +1,5 @@
-﻿import bob
+﻿import typing
+
 import discord
 import logging
 from discord.ext import tasks
@@ -10,7 +11,7 @@ class Configuration(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
         self.logger = logging.getLogger("cogs.Configuration")
-        self.config: Config = client.get_cog("Config")
+        self.config: typing.Union[Config, None] = client.get_cog("Config")
         self.logger.debug("registered.")
         self.reset_channel_topics.start()
 
@@ -35,10 +36,17 @@ class Configuration(commands.Cog):
 
     @tasks.loop(hours=1)
     async def reset_channel_topics(self):
-        for guild_id, data in self.config.config["guilds"].items():
-            # guild = self.client.get_guild(int(guild_id))
+        for guild_id, data in list(self.config.config["guilds"].items()):
+            try:
+                guild = await self.client.fetch_guild(int(guild_id))
+            except discord.Forbidden:
+                guild = None
+            if guild is None:
+                del self.config.config["guilds"][guild_id]
+                self.logger.debug(f"Guild {guild_id} does not exist, assuming the bot is not in it anymore.")
+                continue
             if "channel" in data.keys():
-                channel = self.client.get_channel(int(data["channel"]))
+                channel = await guild.fetch_channel(int(data["channel"]))
                 await self.update_channel_topic(channel)
 
 

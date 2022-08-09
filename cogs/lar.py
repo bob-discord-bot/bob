@@ -1,6 +1,7 @@
 # LaR: Learn and Reply
+import typing
+
 import qna
-import asyncio
 import discord
 import logging
 from cogs.config import Config
@@ -11,7 +12,7 @@ class LaR(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
         self.logger = logging.getLogger("cogs.LaR")
-        self.config: Config = client.get_cog("Config")
+        self.config: typing.Union[Config, None] = client.get_cog("Config")
         self.logger.debug("registered.")
 
     async def learn(self, message: discord.Message):
@@ -54,7 +55,7 @@ class LaR(commands.Cog):
 
         if str(guild.id) in self.config.config["guilds"].keys():
             if channel.id == self.config.config["guilds"][str(guild.id)]["channel"]:
-                content = qna.classes.sanitize_question(message.clean_content)
+                content = qna.classes.sanitize_question(str(message.clean_content))
                 placeholder = "i don't know what to say"
                 text = placeholder
                 if len(self.config.question_map.keys()):

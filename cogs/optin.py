@@ -1,14 +1,18 @@
 import logging
+import typing
+
 from cogs.config import Config
 from discord.ext import commands
 
 
 def blacklist_check(ctx: commands.Context):
-    return ctx.author.id not in ctx.cog.config.config["blacklist"]
+    cog: typing.Union[OptIn, None] = ctx.cog
+    return ctx.author.id not in cog.config.config["blacklist"]
 
 
 def optin_check(ctx: commands.Context):
-    return ctx.author.id in ctx.cog.config.config["optin"]
+    cog: typing.Union[OptIn, None] = ctx.cog
+    return ctx.author.id in cog.config.config["optin"]
 
 
 def optout_check(ctx: commands.Context):
@@ -19,7 +23,7 @@ class OptIn(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
         self.logger = logging.getLogger("cogs.OptIn")
-        self.config: Config = client.get_cog("Config")
+        self.config: typing.Union[Config, None] = client.get_cog("Config")
         self.logger.debug("registered.")
 
     @commands.check(blacklist_check)

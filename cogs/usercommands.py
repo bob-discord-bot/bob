@@ -1,4 +1,5 @@
 import time
+import typing
 
 import bob
 import discord
@@ -14,7 +15,7 @@ class UserCommands(commands.Cog):
         self.client = client
         self.logger = logging.getLogger("cogs.UserCommands")
         self.logger.debug("registered.")
-        self.config: Config = client.get_cog('Config')
+        self.config: typing.Union[Config, None] = client.get_cog("Config")
         self.to_wipe = {}
 
     @commands.command(brief="Need help? Join the support server!")
@@ -22,7 +23,7 @@ class UserCommands(commands.Cog):
         embed = discord.Embed(
             title="Here you go!",
             description=f"You can join [the support server by clicking here](https://discord.gg/uuqZYPYrMj).",
-            color=bob.blue_color,
+            color=discord.Color.blue(),
             timestamp=datetime.datetime.now()
         )
         embed.set_footer(text=f"bob v{bob.__version__}", icon_url=self.client.user.display_avatar.url)
@@ -75,7 +76,7 @@ class UserCommands(commands.Cog):
             responses_total += len(question.responses)
         embed = discord.Embed(
             title="Statistics",
-            color=bob.blue_color,
+            color=discord.Color.green(),
             timestamp=datetime.datetime.now()
         )
         embed.add_field(

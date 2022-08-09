@@ -1,6 +1,7 @@
 import os.path
 import random
 import string
+import typing
 
 import bob
 import logging
@@ -21,7 +22,7 @@ class WebAPI(commands.Cog):
         self.client = client
         self.logger = logging.getLogger("cogs.WebAPI")
         self.logger.debug("registered.")
-        self.config: Config = client.get_cog("Config")
+        self.config: typing.Union[Config, None] = client.get_cog("Config")
         self.app = Flask("WebAPI")
         self.login_key = ""
         if os.path.exists(".login_key"):
@@ -50,11 +51,10 @@ class WebAPI(commands.Cog):
         @self.app.route("/api/auth/start", methods=["POST"])
         def auth_start():
             self.login_key = "".join(random.choices(string.ascii_letters + string.digits + string.punctuation, k=128))
-            with open(".login_key", "w+") as file:
-                file.write(self.login_key)
+            with open(".login_key", "w+") as login_key:
+                login_key.write(self.login_key)
             return ""
 
-        @staticmethod
         def auth_check():
             return request.headers.get('Authorization') == self.login_key
 

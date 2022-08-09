@@ -25,7 +25,7 @@ class Help(commands.Cog):
                 embed = discord.Embed(
                     title=f"bob help | {self.client.command_prefix}{target_command.name}",
                     description=target_command.description or target_command.brief,
-                    color=bob.blue_color,
+                    color=discord.Color.blue(),
                     timestamp=datetime.datetime.now()
                 )
                 embed.add_field(
@@ -38,7 +38,7 @@ class Help(commands.Cog):
                 await ctx.reply(embed=embed)
             return
 
-        embed = discord.Embed(title="bob help", color=bob.blue_color, timestamp=datetime.datetime.now())
+        embed = discord.Embed(title="bob help", color=discord.Color.blue(), timestamp=datetime.datetime.now())
         for command in sorted(self.client.commands, key=lambda c: c.name):
             command: commands.Command
             if command.hidden:

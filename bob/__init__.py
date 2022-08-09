@@ -1,3 +1,4 @@
+"""
+Constants used by bob.
+"""
 __version__ = "2.3.0 beta.1"
-blue_color = 0x2273E6
-red_color = 0xE82E3E

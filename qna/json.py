@@ -3,6 +3,7 @@ import base64
 import logging
 import typing
 import os.path
+import nacl.utils
 import nacl.secret
 
 from qna.classes import Question, Response

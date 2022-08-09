@@ -1,5 +1,4 @@
 import os
-import bob
 import qna
 import json
 import time
@@ -27,7 +26,7 @@ class Config(commands.Cog):
             for question in questions:
                 self.question_map.update({question.text: question})
             del questions
-            self.logger.debug(f"loaded {len(self.question_map.keys())} questions.")
+            self.logger.debug("loaded %d questions.", len(self.question_map.keys()))
 
         if os.path.exists("config.json"):
             self.logger.debug("loading config...")
