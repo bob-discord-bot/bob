@@ -24,14 +24,18 @@ else:
 box = nacl.secret.SecretBox(key)
 
 
-def response_to_dict(response: Response, encrypt=True) -> dict:
+def if_str(value, to_str: bool):
+    return str(value) if to_str else value
+
+
+def response_to_dict(response: Response, encrypt=True, to_str=False) -> dict:
     data = {
         'text': base64.b64encode(box.encrypt(response.text.encode())).decode() if encrypt else response.text,
         'count': response.count,
-        'guild': response.guild,
-        'channel': response.channel,
-        'message': response.message,
-        'author': response.author
+        'guild': if_str(response.guild, to_str),
+        'channel': if_str(response.channel, to_str),
+        'message': if_str(response.message, to_str),
+        'author': if_str(response.author, to_str)
     }
     return data
 
@@ -49,17 +53,17 @@ def dict_to_response(response_dict: dict) -> Response:
     return out
 
 
-def question_to_dict(question: Question, encrypt=True) -> dict:
+def question_to_dict(question: Question, encrypt=True, to_str=False) -> dict:
     data = {
         'text': base64.b64encode(box.encrypt(question.text.encode())).decode() if encrypt else question.text,
         'responses': [],
-        'guild': question.guild,
-        'channel': question.channel,
-        'message': question.message,
-        'author': question.author
+        'guild': if_str(question.guild, to_str),
+        'channel': if_str(question.channel, to_str),
+        'message': if_str(question.message, to_str),
+        'author': if_str(question.author, to_str)
     }
     for response in question.responses:
-        data['responses'].append(response_to_dict(response, encrypt=encrypt))
+        data['responses'].append(response_to_dict(response, encrypt=encrypt, to_str=to_str))
 
     return data
 
@@ -78,10 +82,10 @@ def dict_to_question(question_dict: dict) -> Question:
     return out
 
 
-def questions_to_list(questions: typing.List[Question], encrypt=True) -> typing.List[dict]:
+def questions_to_list(questions: typing.List[Question], encrypt=True, to_str=False) -> typing.List[dict]:
     out = []
     for question in questions:
-        out.append(question_to_dict(question, encrypt=encrypt))
+        out.append(question_to_dict(question, encrypt=encrypt, to_str=to_str))
 
     return out
 
