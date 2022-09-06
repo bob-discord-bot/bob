@@ -3,6 +3,8 @@ Constants used by bob.
 """
 __version__ = "2.3.1 alpha.1"
 
+import random
+
 CATCHPHRASES = [
     "Your conversation partner.",
     "Check us out on Top.gg!",
@@ -10,3 +12,7 @@ CATCHPHRASES = [
 ]
 
 SEPARATOR = '•'
+
+
+def get_footer():
+    return f"bob v{__version__} {SEPARATOR} {random.choice(CATCHPHRASES)}"

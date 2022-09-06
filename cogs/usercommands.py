@@ -26,7 +26,7 @@ class UserCommands(commands.Cog):
             color=discord.Color.blue(),
             timestamp=datetime.datetime.now()
         )
-        embed.set_footer(text=f"bob v{bob.__version__}", icon_url=self.client.user.display_avatar.url)
+        embed.set_footer(text=bob.get_footer(), icon_url=self.client.user.display_avatar.url)
 
         await ctx.reply(embed=embed)
 
@@ -95,7 +95,7 @@ class UserCommands(commands.Cog):
             name="Your responses",
             value=str(user_responses)
         )
-        embed.set_footer(text=f"bob v{bob.__version__}", icon_url=self.client.user.display_avatar.url)
+        embed.set_footer(text=bob.get_footer(), icon_url=self.client.user.display_avatar.url)
         await ctx.reply(embed=embed)
 
 
