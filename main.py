@@ -116,4 +116,4 @@ async def on_message(message: discord.Message):
 if __name__ == "__main__":
     logger.debug("connecting to discord...")
     with open("token.txt") as file:
-        client.run(file.readline())
+        client.run(file.readline().strip('\n'))

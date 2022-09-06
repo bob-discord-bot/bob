@@ -6,3 +6,4 @@ nest-asyncio
 requests
 jishaku
 pynacl
+topggpy

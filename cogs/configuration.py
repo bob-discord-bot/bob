@@ -36,18 +36,11 @@ class Configuration(commands.Cog):
 
     @tasks.loop(hours=1)
     async def reset_channel_topics(self):
-        for guild_id, data in list(self.config.config["guilds"].items()):
-            try:
-                guild = await self.client.fetch_guild(int(guild_id))
-            except discord.Forbidden:
-                guild = None
-            if guild is None:
-                del self.config.config["guilds"][guild_id]
-                self.logger.debug(f"Guild {guild_id} does not exist, assuming the bot is not in it anymore.")
-                continue
+        for guild_id, data in self.config.config["guilds"].items():
             if "channel" in data.keys():
-                channel = await guild.fetch_channel(int(data["channel"]))
-                await self.update_channel_topic(channel)
+                channel = self.client.get_channel(int(data["channel"]))
+                if channel is not None:
+                    await self.update_channel_topic(channel)
 
 
 async def setup(client: commands.Bot):

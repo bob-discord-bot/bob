@@ -1,4 +1,5 @@
 import os
+import topgg
 import qna
 import json
 import time
@@ -18,6 +19,13 @@ class Config(commands.Cog):
         self.logger = logging.getLogger("cogs.Config")
         self.config = {"guilds": {}, "optin": [], "question_limit": 100000, "blacklist": []}
         self.question_map = {}
+        if os.path.exists("topgg.txt"):
+            with open("topgg.txt") as file:
+                self.topgg = topgg.DBLClient(
+                    bot=self.client,
+                    token=file.readline().strip('\n'),
+                    autopost=True
+                )
 
         if os.path.exists("data.json"):
             self.logger.debug("loading questions...")
