@@ -1,8 +1,11 @@
+import re
 import string
+
+PUNCTUATION_REGEX = re.compile(f"[{string.punctuation}]")
 
 
 def sanitize_question(content: str) -> str:
-    return content.lower().translate(str.maketrans('', '', string.punctuation + " \n"))
+    return PUNCTUATION_REGEX.sub("", content.lower())
 
 
 class Response:
