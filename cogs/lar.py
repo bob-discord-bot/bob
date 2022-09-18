@@ -59,7 +59,8 @@ class LaR(commands.Cog):
                 placeholder = "i don't know what to say"
                 text = placeholder
                 if len(self.config.question_map.keys()):
-                    question = qna.helpers.get_closest_question(list(self.config.question_map.values()), content)
+                    question = qna.helpers.get_closest_question(list(self.config.question_map.values()), content,
+                                                                message.guild.id)
                     response = qna.helpers.pick_response(question)
                     text = response.text or placeholder
                 if message.content.startswith(self.client.command_prefix):

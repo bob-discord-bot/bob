@@ -26,10 +26,12 @@ def pick_response(question: Question) -> Response:
             return response
 
 
-def get_closest_question(questions: typing.List[Question], message: str) -> Question:
+def get_closest_question(questions: typing.List[Question], message: str, guild_id: int) -> Question:
     lowest = None
     target = None
     for question in questions:
+        if question.guild != guild_id:
+            continue
         dist = Levenshtein.distance(question.text, message)
         if lowest is None or lowest > dist:
             lowest = dist
