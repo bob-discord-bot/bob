@@ -88,6 +88,10 @@ class UserCommands(commands.Cog):
             value=str(responses_total)
         )
         embed.add_field(
+            name="Servers",
+            value=str(len(self.client.guilds))
+        )
+        embed.add_field(
             name="Your prompts",
             value=str(user_questions)
         )

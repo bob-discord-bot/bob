@@ -17,7 +17,7 @@ class Config(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
         self.logger = logging.getLogger("cogs.Config")
-        self.config = {"guilds": {}, "optin": [], "question_limit": 100000, "blacklist": []}
+        self.config = {"guilds": {}, "optout": [], "question_limit": 100000, "blacklist": []}
         self.question_map = {}
         if os.path.exists("topgg.txt"):
             with open("topgg.txt") as file:
@@ -42,10 +42,10 @@ class Config(commands.Cog):
                 self.config: dict = json.load(file)
                 if "guilds" not in self.config.keys():
                     self.config.update({"guilds": {}})
-                if "optin" not in self.config.keys():
-                    self.config.update({"optin": []})
-                if "optout" in self.config.keys():
-                    self.config.pop("optout")
+                if "optout" not in self.config.keys():
+                    self.config.update({"optout": []})
+                if "optin" in self.config.keys():
+                    self.config.pop("optin")
                 if "question_limit" not in self.config.keys():
                     self.config.update({"question_limit": 100000})
                 if "blacklist" not in self.config.keys():
@@ -112,8 +112,8 @@ class Config(commands.Cog):
 
         self.logger.debug(f"{responses} responses, updating status...")
         game = discord.Activity(
-            type=discord.ActivityType.listening,
-            name=f"your messages | {self.client.command_prefix}help | {len(self.question_map.keys())} prompts and "
+            type=discord.ActivityType.playing,
+            name=f"with your messages | {self.client.command_prefix}help | {len(self.question_map.keys())} prompts and "
                  f"{responses} responses",
         )
         await self.client.change_presence(activity=game)
