@@ -98,6 +98,7 @@ async def on_ready():
     ]
     for cog in cogs:
         await client.load_extension(cog)
+    await client.tree.sync()
     logger.info(f"bob v{bob.__version__} is ready!")
 
 

@@ -18,7 +18,7 @@ class UserCommands(commands.Cog):
         self.config: typing.Union[Config, None] = client.get_cog("Config")
         self.to_wipe = {}
 
-    @commands.command(brief="Need help? Join the support server!")
+    @commands.hybrid_command(brief="Need help? Join the support server!")
     async def support(self, ctx: commands.Context):
         embed = discord.Embed(
             title="Here you go!",
@@ -30,7 +30,7 @@ class UserCommands(commands.Cog):
 
         await ctx.reply(embed=embed)
 
-    @commands.command(brief="Wipe your data from bob's dataset.")
+    @commands.hybrid_command(brief="Wipe your data from bob's dataset.")
     async def clean(self, ctx: commands.Context):
         if ctx.author.id not in self.to_wipe:
             await ctx.reply("Are you sure you want to wipe your data from bob? **This action is irreversible.** "
@@ -61,7 +61,7 @@ class UserCommands(commands.Cog):
                 del self.to_wipe[ctx.author.id]
                 await self.clean(ctx)
 
-    @commands.command(brief="Check the bot's statistics.")
+    @commands.hybrid_command(brief="Check the bot's statistics.")
     async def stats(self, ctx: commands.Context):
         user_questions = 0
         user_responses = 0

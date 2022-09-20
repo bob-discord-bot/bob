@@ -1,13 +1,13 @@
 """
 Constants used by bob.
 """
-__version__ = "2.4.0"
+__version__ = "2.5.0 alpha.1"
 
 import random
 
 CATCHPHRASES = [
     "Your conversation partner.",
-    "Check us out on Top.gg!",
+    "Check me out on Top.gg!",
     "A bit dumb and a bit smart."
 ]
 

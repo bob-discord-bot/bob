@@ -18,7 +18,7 @@ class OptIn(commands.Cog):
         self.logger.debug("registered.")
 
     @commands.check(blacklist_check)
-    @commands.command(brief="Opt-out of bob message collection.")
+    @commands.hybrid_command(brief="Opt-out of bob message collection.")
     async def optout(self, ctx: commands.Context):
         if ctx.author.id in self.config.config["optout"]:
             return await ctx.reply("You're already opted out!")
@@ -28,7 +28,7 @@ class OptIn(commands.Cog):
                         f"run **{self.client.command_prefix}clean**.")
 
     @commands.check(blacklist_check)
-    @commands.command(brief="Opt-in to bob message collection.")
+    @commands.hybrid_command(brief="Opt-in to bob message collection.")
     async def optin(self, ctx: commands.Context):
         if ctx.author.id not in self.config.config["optout"]:
             return await ctx.reply("You're already opted in. bob is opt-out by default since September 2022.")
