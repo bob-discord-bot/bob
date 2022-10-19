@@ -2,7 +2,6 @@
 
 import discord
 import logging
-from discord.ext import tasks
 from cogs.config import Config
 from discord.ext import commands
 

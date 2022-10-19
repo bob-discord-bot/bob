@@ -17,7 +17,13 @@ class Config(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
         self.logger = logging.getLogger("cogs.Config")
-        self.config = {"guilds": {}, "optout": [], "question_limit": 100000, "blacklist": []}
+        self.config = {
+            "guilds": {},
+            "optout": [],
+            "question_limit": 100000,
+            "blacklist": [],
+            "analytics": [],
+        }
         self.question_map = {}
         if os.path.exists("topgg.txt"):
             with open("topgg.txt") as file:
@@ -50,11 +56,14 @@ class Config(commands.Cog):
                     self.config.update({"question_limit": 100000})
                 if "blacklist" not in self.config.keys():
                     self.config.update({"blacklist": []})
+                if "analytics" not in self.config.keys():
+                    self.config.update({"analytics": []})
 
         self.logger.debug("loaded config.")
 
         self.periodic_data_clean_and_save.start()
         self.update_status.start()
+        self.log_data.start()
 
     def save_data(self):
         with open("config.json", "w+") as file:
@@ -117,6 +126,14 @@ class Config(commands.Cog):
                  f"{responses} responses",
         )
         await self.client.change_presence(activity=game)
+
+    @tasks.loop(hours=24.0)
+    async def log_data(self):
+        self.logger.debug("calculating responses...")
+        responses = len([response for question in self.question_map.values() for response in question.responses])
+
+        self.logger.debug("adding analytics info...")
+        self.config["analytics"].append([len(self.question_map), responses, len(self.client.guilds), time.time()])
 
     def cog_unload(self):
         self.logger.debug("cog is being unloaded, saving data...")

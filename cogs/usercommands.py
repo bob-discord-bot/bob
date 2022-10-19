@@ -65,9 +65,13 @@ class UserCommands(commands.Cog):
     async def stats(self, ctx: commands.Context):
         user_questions = 0
         user_responses = 0
+        questions_total = 0
         responses_total = 0
         for question_key in self.config.question_map:
             question = self.config.question_map[question_key]
+            if question.guild != ctx.guild.id:
+                continue
+            questions_total += 1
             if question.author == ctx.author.id:
                 user_questions += 1
             for response in question.responses:
@@ -80,11 +84,11 @@ class UserCommands(commands.Cog):
             timestamp=datetime.datetime.now()
         )
         embed.add_field(
-            name="Prompts",
-            value=str(len(self.config.question_map))
+            name="Server prompts",
+            value=str(questions_total)
         )
         embed.add_field(
-            name="Responses",
+            name="Server responses",
             value=str(responses_total)
         )
         embed.add_field(
