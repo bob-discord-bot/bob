@@ -38,7 +38,7 @@ class Config(commands.Cog):
             with open("data.json") as file:
                 questions = qna.json.json_to_questions(file.read())
             for question in questions:
-                self.question_map.update({question.text: question})
+                self.question_map.update({question.text + str(question.guild): question})
             del questions
             self.logger.debug("loaded %d questions.", len(self.question_map.keys()))
 

@@ -30,8 +30,6 @@ def get_closest_question(questions: typing.List[Question], message: str, guild_i
     lowest = None
     target = None
     for question in questions:
-        if question.guild != guild_id:
-            continue
         dist = Levenshtein.distance(question.text, message)
         if lowest is None or lowest > dist:
             lowest = dist

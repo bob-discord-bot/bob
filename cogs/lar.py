@@ -30,8 +30,8 @@ class LaR(commands.Cog):
 
             content = qna.classes.sanitize_question(reply.clean_content + " " +
                                                     " ".join([attachment.url for attachment in reply.attachments]))
-            if content not in self.config.question_map.keys():
-                self.config.question_map.update({content: qna.classes.Question(
+            if content + str(message.guild.id) not in self.config.question_map.keys():
+                self.config.question_map.update({content + str(message.guild.id): qna.classes.Question(
                     content,
                     reply.guild.id,
                     reply.channel.id,
@@ -40,7 +40,7 @@ class LaR(commands.Cog):
                 )})
             response_content = (message.clean_content + " " +
                                 " ".join([attachment.url for attachment in message.attachments]))
-            self.config.question_map[content].add_response(qna.classes.Response(
+            self.config.question_map[content + str(message.guild.id)].add_response(qna.classes.Response(
                 response_content,
                 message.guild.id,
                 message.channel.id,
@@ -58,8 +58,9 @@ class LaR(commands.Cog):
                 content = qna.classes.sanitize_question(str(message.clean_content))
                 placeholder = "i don't know what to say"
                 text = placeholder
-                if len(self.config.question_map.keys()):
-                    question = qna.helpers.get_closest_question(list(self.config.question_map.values()), content,
+                server_questions = [q for q in self.config.question_map.values() if q.guild == message.guild.id]
+                if len(server_questions):
+                    question = qna.helpers.get_closest_question(server_questions, content,
                                                                 message.guild.id)
                     response = qna.helpers.pick_response(question)
                     text = response.text or placeholder
