@@ -56,7 +56,7 @@ class LaR(commands.Cog):
         if str(guild.id) in self.config.config["guilds"].keys():
             if channel.id == self.config.config["guilds"][str(guild.id)]["channel"]:
                 content = qna.classes.sanitize_question(str(message.clean_content))
-                placeholder = "i don't know what to say"
+                placeholder = "I don't know what to say (give me some time to learn)"
                 text = placeholder
                 server_questions = [q for q in self.config.question_map.values() if q.guild == message.guild.id]
                 if len(server_questions):
@@ -66,7 +66,7 @@ class LaR(commands.Cog):
                     text = response.text or placeholder
                 if message.content.startswith(self.client.command_prefix):
                     text += "\n(psst, i don't listen to commands here! if you want to run a command, " \
-                            "go to another channel.)"
+                            "go to another channel or use slash commands.)"
                 await message.reply(text)
                 self.logger.debug(f"reply: {message.clean_content} -> {text}")
 
