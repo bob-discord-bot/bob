@@ -2,6 +2,7 @@ import time
 import typing
 
 import bob
+import qna
 import discord
 import logging
 import datetime
@@ -29,6 +30,38 @@ class UserCommands(commands.Cog):
         embed.set_footer(text=bob.get_footer(), icon_url=self.client.user.display_avatar.url)
 
         await ctx.reply(embed=embed)
+
+    @commands.hybrid_command(brief="Get debug information for a reply.")
+    async def debug(self, ctx: commands.Context, *, prompt: str):
+        guild: discord.Guild = ctx.guild
+        message: discord.Message = ctx.message
+
+        if str(guild.id) in self.config.config["guilds"].keys():
+            content = qna.classes.sanitize_question(prompt)
+            placeholder = "I don't know what to say (give me some time to learn)"
+            text = placeholder
+            question = None
+            response = None
+            server_questions = [q for q in self.config.question_map.values() if q.guild == message.guild.id]
+            if len(server_questions):
+                question = qna.helpers.get_closest_question(server_questions, content,
+                                                            message.guild.id)
+                response = qna.helpers.pick_response(question)
+                text = response.text or placeholder
+            embed = None
+            if response:
+                embed = discord.Embed(
+                    title="Debug information",
+                    color=discord.Color.gold(),
+                    timestamp=datetime.datetime.now()
+                )
+                embed.add_field(name="I thought you said...", value=question.text, inline=False)
+                embed.add_field(name="Originally said by", value=f"<@{response.author}> in <#{question.channel}>, replying to <@{question.author}>", inline=False)
+                embed.add_field(name="Message link", value=f"https://discord.com/channels/{response.guild}/{response.channel}/{response.message}", inline=False)
+                embed.set_footer(text=bob.get_footer(), icon_url=self.client.user.display_avatar.url)
+            await message.reply(text, embed=embed)
+        else:
+            await message.reply("I'm not set up in this server, thus I can't give you debug information for replies.")
 
     @commands.hybrid_command(brief="Wipe your data from bob's dataset.")
     async def clean(self, ctx: commands.Context):
