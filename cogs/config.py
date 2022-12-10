@@ -88,6 +88,10 @@ class Config(commands.Cog):
             if question.author in self.config["blacklist"]:
                 to_pop.append(question_key)
                 continue
+            
+            if question.guild not in [guild.id for guild in self.client.guilds]:
+                to_pop.append(question_key)
+                continue
 
             responses_to_remove = []
             for response in question.responses:
