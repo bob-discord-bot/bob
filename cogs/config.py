@@ -88,15 +88,10 @@ class Config(commands.Cog):
             if question.author in self.config["blacklist"]:
                 to_pop.append(question_key)
                 continue
-            if time.time() > snowflake_to_timestamp(question.message) + (30 * 60 * 60 * 24):
-                to_pop.append(question_key)
-                continue
 
             responses_to_remove = []
             for response in question.responses:
                 if response.author in self.config["blacklist"]:
-                    responses_to_remove.append(response)
-                if time.time() > snowflake_to_timestamp(response.message) + (30 * 60 * 60 * 24):
                     responses_to_remove.append(response)
 
             for index in responses_to_remove:
@@ -134,6 +129,9 @@ class Config(commands.Cog):
 
         self.logger.debug("adding analytics info...")
         self.config["analytics"].append([len(self.question_map), responses, len(self.client.guilds), time.time()])
+
+        if len(self.config["analytics"]) > 30:
+            self.config["analytics"] = self.config["analytics"][-30:]
 
     def cog_unload(self):
         self.logger.debug("cog is being unloaded, saving data...")
