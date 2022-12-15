@@ -20,8 +20,8 @@ logging.basicConfig(
 
 intents = discord.Intents.default()
 intents.message_content = True
-client = commands.AutoShardedBot(command_prefix="bc." if args.debug else "b.", help_command=None,
-                                 intents=intents)
+client = commands.Bot(command_prefix="bc." if args.debug else "b.", help_command=None,
+                      intents=intents)
 
 logger = logging.getLogger("bob")
 
