@@ -59,9 +59,9 @@ class UserCommands(commands.Cog):
                 embed.add_field(name="Originally said by", value=f"<@{response.author}> in <#{question.channel}>, replying to <@{question.author}>", inline=False)
                 embed.add_field(name="Message link", value=f"https://discord.com/channels/{response.guild}/{response.channel}/{response.message}", inline=False)
                 embed.set_footer(text=bob.get_footer(), icon_url=self.client.user.display_avatar.url)
-            await message.reply(text, embed=embed)
+            await ctx.reply(text, embed=embed)
         else:
-            await message.reply("I'm not set up in this server, thus I can't give you debug information for replies.")
+            await ctx.reply("I'm not set up in this server, thus I can't give you debug information for replies.")
 
     @commands.hybrid_command(brief="Wipe your data from bob's dataset.")
     async def clean(self, ctx: commands.Context):
