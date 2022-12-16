@@ -55,7 +55,7 @@ class UserCommands(commands.Cog):
                     color=discord.Color.gold(),
                     timestamp=datetime.datetime.now()
                 )
-                embed.add_field(name="I thought you said...", value=question.text, inline=False)
+                embed.add_field(name="I thought you said...", value=question.text or "(empty message)", inline=False)
                 embed.add_field(name="Originally said by", value=f"<@{response.author}> in <#{question.channel}>, replying to <@{question.author}>", inline=False)
                 embed.add_field(name="Message link", value=f"https://discord.com/channels/{response.guild}/{response.channel}/{response.message}", inline=False)
                 embed.set_footer(text=bob.get_footer(), icon_url=self.client.user.display_avatar.url)
