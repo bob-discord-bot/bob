@@ -1,7 +1,7 @@
 """
 Constants used by bob.
 """
-__version__ = "2.7.3"
+__version__ = "2.7.4"
 
 import random
 

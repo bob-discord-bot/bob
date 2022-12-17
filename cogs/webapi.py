@@ -95,7 +95,7 @@ class WebAPI(commands.Cog):
                 questions = {i: q for i, q in questions.items() for r in q["responses"] if response_search in r["text"]}
             start = int(start) if start else None
             count = int(count) if count else None
-            end = start + count if start is not None and count is not None else None
+            end = start + count if start is not None and count is not None else count
             questions = {i: q for i, q in list(questions.items())[start:end]}
             return questions
 
