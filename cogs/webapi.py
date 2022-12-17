@@ -27,7 +27,7 @@ class WebAPI(commands.Cog):
         self.login_key = ""
         if os.path.exists(".login_key"):
             with open(".login_key") as file:
-                self.login_key = file.read()
+                self.login_key = file.read().strip()
         CORS(self.app)
         nest_asyncio.apply(self.client.loop)
 
@@ -52,7 +52,7 @@ class WebAPI(commands.Cog):
         def auth_start():
             self.login_key = "".join(random.choices(string.ascii_letters + string.digits + string.punctuation, k=128))
             with open(".login_key", "w+") as login_key:
-                login_key.write(self.login_key)
+                login_key.write(self.login_key + "\n")
             return ""
 
         def auth_check():
@@ -70,9 +70,10 @@ class WebAPI(commands.Cog):
         """
         Returns questions.
         
-        | QS parameter | Required? | Use                      |
-        | ------------ | --------- | ------------------------ |
-        | search       | false     | Search through questions |
+        | QS parameter    | Required? | Use                      |
+        | --------------- | --------- | ------------------------ |
+        | search          | false     | Search through questions |
+        | response_search | false     | Search through responses |
         
         For use in dashboard, requires authentication.
         """
@@ -83,8 +84,11 @@ class WebAPI(commands.Cog):
             questions_list = qna.json.questions_to_list(self.config.question_map.values(), encrypt=False, to_str=True)
             questions = {k: v for k, v in [(questions_list.index(q), q) for q in questions_list]}
             search = request.args.get('search')
+            response_search = request.args.get('response_search')
             if search:
                 questions = {i: q for i, q in questions.items() if search in q["text"]}
+            if response_search:
+                questions = {i: q for i, q in questions.items() for r in q["responses"] if response_search in r["text"]}
             return questions
 
         """
