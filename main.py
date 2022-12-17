@@ -88,6 +88,7 @@ async def on_command_error(ctx: commands.Context, error):
 async def on_ready():
     cogs = [
         "cogs.config",
+        "cogs.modmode",
         "cogs.lar",
         "cogs.configuration",
         "cogs.optin",

@@ -40,7 +40,7 @@ class Config(commands.Cog):
             for question in questions:
                 self.question_map.update({question.text + str(question.guild): question})
             del questions
-            self.logger.debug("loaded %d questions.", len(self.question_map.keys()))
+            self.logger.debug("loaded %d questions.", len(self.question_map))
 
         if os.path.exists("config.json"):
             self.logger.debug("loading config...")

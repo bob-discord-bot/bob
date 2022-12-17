@@ -1,9 +1,8 @@
 # LaR: Learn and Reply
-import typing
-
 import qna
 import discord
 import logging
+from cogs.modmode import DeleteView, ModMode
 from cogs.config import Config
 from discord.ext import commands
 
@@ -12,8 +11,9 @@ class LaR(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
         self.logger = logging.getLogger("cogs.LaR")
-        self.config: typing.Union[Config, None] = client.get_cog("Config")
+        self.config: Config | None = client.get_cog("Config")
         self.logger.debug("registered.")
+        self.mod_mode: ModMode | None = self.client.get_cog("ModMode")
 
     async def learn(self, message: discord.Message):
         if message.author.id in self.config.config["optout"] or message.author.id in self.config.config["blacklist"]:
@@ -59,15 +59,21 @@ class LaR(commands.Cog):
                 placeholder = "I don't know what to say (give me some time to learn)"
                 text = placeholder
                 server_questions = [q for q in self.config.question_map.values() if q.guild == message.guild.id]
+                question = None
+                response = None
                 if len(server_questions):
-                    question = qna.helpers.get_closest_question(server_questions, content,
-                                                                message.guild.id)
+                    question = qna.helpers.get_closest_question(server_questions, content)
                     response = qna.helpers.pick_response(question)
                     text = response.text or placeholder
                 if message.content.startswith(self.client.command_prefix):
                     text += "\n(psst, i don't listen to commands here! if you want to run a command, " \
                             "go to another channel or use slash commands.)"
-                await message.reply(text)
+                view = None
+                if self.mod_mode.is_in_mod_mode(guild, message.author):
+                    view = DeleteView(self.mod_mode, self.config)
+                message_reply = await message.reply(text, view=view)
+                if self.mod_mode.is_in_mod_mode(guild, message.author):
+                    self.mod_mode.save_info(guild, message.author, message_reply, question, response)
                 self.logger.debug(f"reply: {message.clean_content} -> {text}")
 
     @commands.Cog.listener()

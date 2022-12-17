@@ -26,7 +26,7 @@ def pick_response(question: Question) -> Response:
             return response
 
 
-def get_closest_question(questions: typing.List[Question], message: str, guild_id: int) -> Question:
+def get_closest_question(questions: typing.List[Question], message: str) -> Question:
     lowest = None
     target = None
     for question in questions:

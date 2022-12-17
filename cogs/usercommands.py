@@ -44,8 +44,7 @@ class UserCommands(commands.Cog):
             response = None
             server_questions = [q for q in self.config.question_map.values() if q.guild == message.guild.id]
             if len(server_questions):
-                question = qna.helpers.get_closest_question(server_questions, content,
-                                                            message.guild.id)
+                question = qna.helpers.get_closest_question(server_questions, content)
                 response = qna.helpers.pick_response(question)
                 text = response.text or placeholder
             embed = None

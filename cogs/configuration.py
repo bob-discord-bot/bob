@@ -16,8 +16,6 @@ class Configuration(commands.Cog):
     @commands.has_permissions(manage_channels=True)
     @commands.hybrid_command(brief="Sets the channel that bob will talk in.")
     async def channel(self, ctx: commands.Context, channel: discord.TextChannel):
-        if not ctx.author.resolved_permissions.manage_channels:
-            return await ctx.reply("You're not allowed to use this command!")
         self.logger.debug(f"setting guild {ctx.guild.id}'s channel to {channel.id}")
         if str(ctx.guild.id) not in self.config.config["guilds"].keys():
             self.config.config["guilds"].update({str(ctx.guild.id): {"channel": channel.id}})
