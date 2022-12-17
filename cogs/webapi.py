@@ -82,7 +82,7 @@ class WebAPI(commands.Cog):
             if not auth_check():
                 return "", 400
             questions_list = qna.json.questions_to_list(self.config.question_map.values(), encrypt=False, to_str=True)
-            questions = {k: v for k, v in [(questions_list.index(q), q) for q in questions_list]}
+            questions = {k: v for k, v in enumerate(questions_list)}
             search = request.args.get('search')
             response_search = request.args.get('response_search')
             if search:
