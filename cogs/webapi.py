@@ -74,6 +74,8 @@ class WebAPI(commands.Cog):
         | --------------- | --------- | ------------------------ |
         | search          | false     | Search through questions |
         | response_search | false     | Search through responses |
+        | start           | false     | Skip X questions         |
+        | count           | false     | Return X questions       |
         
         For use in dashboard, requires authentication.
         """
@@ -85,10 +87,16 @@ class WebAPI(commands.Cog):
             questions = {k: v for k, v in enumerate(questions_list)}
             search = request.args.get('search')
             response_search = request.args.get('response_search')
+            start = request.args.get('start')
+            count = request.args.get('count')
             if search:
                 questions = {i: q for i, q in questions.items() if search in q["text"]}
             if response_search:
                 questions = {i: q for i, q in questions.items() for r in q["responses"] if response_search in r["text"]}
+            start = int(start) if start else None
+            count = int(count) if count else None
+            end = start + count if start is not None and count is not None else None
+            questions = {i: q for i, q in list(questions.items())[start:end]}
             return questions
 
         """
