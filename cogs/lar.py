@@ -28,8 +28,8 @@ class LaR(commands.Cog):
             if reply.author.id in self.config.config["optout"]:
                 return
 
-            content = qna.classes.sanitize_question(reply.clean_content + " " +
-                                                    " ".join([attachment.url for attachment in reply.attachments]))
+            content = qna.classes.sanitize_question((reply.clean_content + " " +
+                                                     " ".join([attachment.url for attachment in reply.attachments])).strip())
             if content + str(message.guild.id) not in self.config.question_map.keys():
                 self.config.question_map.update({content + str(message.guild.id): qna.classes.Question(
                     content,
@@ -39,7 +39,7 @@ class LaR(commands.Cog):
                     reply.author.id
                 )})
             response_content = (message.clean_content + " " +
-                                " ".join([attachment.url for attachment in message.attachments]))
+                                " ".join([attachment.url for attachment in message.attachments])).strip()
             self.config.question_map[content + str(message.guild.id)].add_response(qna.classes.Response(
                 response_content,
                 message.guild.id,
