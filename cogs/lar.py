@@ -75,6 +75,7 @@ class LaR(commands.Cog):
                 if self.mod_mode.is_in_mod_mode(guild, message.author):
                     self.mod_mode.save_info(guild, message.author, message_reply, question, response)
                 self.logger.debug(f"reply: {message.clean_content} -> {text}")
+                self.config.messages_sent += 1
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):

@@ -24,6 +24,7 @@ class Config(commands.Cog):
             "blacklist": [],
             "analytics": [],
         }
+        self.messages_sent = 0
         self.question_map = {}
         if os.path.exists("topgg.txt"):
             with open("topgg.txt") as file:
@@ -132,7 +133,10 @@ class Config(commands.Cog):
         responses = len([response for question in self.question_map.values() for response in question.responses])
 
         self.logger.debug("adding analytics info...")
-        self.config["analytics"].append([len(self.question_map), responses, len(self.client.guilds), time.time()])
+        self.config["analytics"].append([len(self.question_map), responses, len(self.client.guilds), time.time(),
+                                         self.messages_sent])
+
+        self.messages_sent = 0
 
         if len(self.config["analytics"]) > 30:
             self.config["analytics"] = self.config["analytics"][-30:]
