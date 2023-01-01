@@ -106,6 +106,11 @@ async def on_ready():
 @client.event
 async def on_message(message: discord.Message):
     config: typing.Union[Config, None] = client.get_cog("Config")
+    if config is None:
+        # bob hasn't finished initializing at this state, yet it's already trying to access the config
+        # this is an edge case that happens only because the bot is kinda big now
+        # lmao
+        return
     if message.author.bot or message.is_system() or message.guild is None:
         return
 
