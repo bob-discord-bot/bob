@@ -28,8 +28,7 @@ class LaR(commands.Cog):
             if reply.author.id in self.config.config["optout"]:
                 return
 
-            content = qna.classes.sanitize_question((reply.clean_content + " " +
-                                                     " ".join([attachment.url for attachment in reply.attachments])).strip())
+            content = qna.classes.sanitize_question(qna.helpers.get_message_as_string(reply))
             if content + str(message.guild.id) not in self.config.question_map.keys():
                 self.config.question_map.update({content + str(message.guild.id): qna.classes.Question(
                     content,
@@ -38,8 +37,7 @@ class LaR(commands.Cog):
                     reply.id,
                     reply.author.id
                 )})
-            response_content = (message.clean_content + " " +
-                                " ".join([attachment.url for attachment in message.attachments])).strip()
+            response_content = qna.helpers.get_message_as_string(message)
             self.config.question_map[content + str(message.guild.id)].add_response(qna.classes.Response(
                 response_content,
                 message.guild.id,
@@ -47,7 +45,8 @@ class LaR(commands.Cog):
                 message.id,
                 message.author.id
             ))
-            self.logger.debug(f"save: {reply.clean_content} -> {message.clean_content}")
+            self.logger.debug(f"save: {qna.helpers.get_message_as_string(reply)} -> "
+                              f"{qna.helpers.get_message_as_string(message)}")
 
     async def reply(self, message: discord.Message):
         guild: discord.Guild = message.guild
@@ -55,7 +54,7 @@ class LaR(commands.Cog):
 
         if str(guild.id) in self.config.config["guilds"].keys():
             if channel.id == self.config.config["guilds"][str(guild.id)]["channel"]:
-                content = qna.classes.sanitize_question(str(message.clean_content))
+                content = qna.classes.sanitize_question(qna.helpers.get_message_as_string(message))
                 placeholder = "I don't know what to say (give me some time to learn)"
                 text = placeholder
                 server_questions = [q for q in self.config.question_map.values() if q.guild == message.guild.id]
@@ -74,7 +73,7 @@ class LaR(commands.Cog):
                 message_reply = await message.reply(text, view=view)
                 if self.mod_mode.is_in_mod_mode(guild, message.author):
                     self.mod_mode.save_info(guild, message.author, message_reply, question, response)
-                self.logger.debug(f"reply: {message.clean_content} -> {text}")
+                self.logger.debug(f"reply: {qna.helpers.get_message_as_string(message)} -> {text}")
                 self.config.messages_sent += 1
 
     @commands.Cog.listener()

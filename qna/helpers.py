@@ -1,6 +1,8 @@
 import random
 import typing
 import Levenshtein
+import discord
+
 from .classes import Question, Response
 
 
@@ -36,3 +38,12 @@ def get_closest_question(questions: typing.List[Question], message: str) -> Ques
             target = question
 
     return target
+
+
+def get_message_as_string(message: discord.Message) -> str:
+    ret = message.clean_content
+    ret += " " + " ".join([attachment.url for attachment in message.attachments])
+    ret += " " + " ".join([f"https://media.discordapp.net/stickers/{sticker.id}.png?size=160"
+                           for sticker in message.stickers])
+
+    return ret.strip()
