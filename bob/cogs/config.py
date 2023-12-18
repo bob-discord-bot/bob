@@ -16,6 +16,18 @@ def snowflake_to_timestamp(snowflake: int):
     return ((snowflake >> 22) + 1420070400000) / 1000
 
 
+def __save_data_impl(logger, config, question_map):
+    logger.debug("saving data...")
+
+    with open("config.json", "w+") as file:
+        json.dump(config, file)
+
+    with open("data.json", "w+") as file:
+        file.write(qna.json.questions_to_json(list(question_map.values())))
+
+    logger.debug("done saving data.")
+
+
 class Config(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
@@ -69,22 +81,13 @@ class Config(commands.Cog):
         self.update_status.start()
         self.log_data.start()
 
-    @classmethod
-    def __save_data_impl(logger, config, question_map):
-        logger.debug("saving data...")
-
-        with open("config.json", "w+") as file:
-            json.dump(config, file)
-
-        with open("data.json", "w+") as file:
-            file.write(qna.json.questions_to_json(list(question_map.values())))
-
-        logger.debug("done saving data.")
-
     async def save_data(self):
         with ProcessPoolExecutor(1) as executor:
             await asyncio.get_event_loop().run_in_executor(
-                executor, functools.partial(self.__save_data_impl, self.logger, self.config, self.question_map)
+                executor,
+                functools.partial(
+                    __save_data_impl, self.logger, self.config, self.question_map
+                ),
             )
 
     @tasks.loop(minutes=5.0)
@@ -178,7 +181,9 @@ class Config(commands.Cog):
 
     def cog_unload(self):
         self.logger.debug("cog is being unloaded, saving data...")
-        self.__save_data_impl(self.logger, self.config, self.question_map)  # can't async, doesn't matter
+        __save_data_impl(
+            self.logger, self.config, self.question_map
+        )  # can't async, doesn't matter
 
 
 async def setup(client: commands.Bot):
