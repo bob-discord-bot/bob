@@ -9,23 +9,12 @@ import logging
 import functools
 from discord.ext import tasks
 from discord.ext import commands
+from bob import _internal
 from concurrent.futures.process import ProcessPoolExecutor
 
 
 def snowflake_to_timestamp(snowflake: int):
     return ((snowflake >> 22) + 1420070400000) / 1000
-
-
-def __save_data_impl(logger, config, question_map):
-    logger.debug("saving data...")
-
-    with open("config.json", "w+") as file:
-        json.dump(config, file)
-
-    with open("data.json", "w+") as file:
-        file.write(qna.json.questions_to_json(list(question_map.values())))
-
-    logger.debug("done saving data.")
 
 
 class Config(commands.Cog):
@@ -85,9 +74,10 @@ class Config(commands.Cog):
         with ProcessPoolExecutor(1) as executor:
             await asyncio.get_event_loop().run_in_executor(
                 executor,
-                functools.partial(
-                    __save_data_impl, self.logger, self.config, self.question_map
-                ),
+                _internal.__save_data_impl,
+                self.logger,
+                self.config,
+                self.question_map,
             )
 
     @tasks.loop(minutes=5.0)
@@ -181,7 +171,7 @@ class Config(commands.Cog):
 
     def cog_unload(self):
         self.logger.debug("cog is being unloaded, saving data...")
-        __save_data_impl(
+        _internal.__save_data_impl(
             self.logger, self.config, self.question_map
         )  # can't async, doesn't matter
 
