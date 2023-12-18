@@ -3,10 +3,13 @@ import topgg
 import bob.qna as qna
 import json
 import time
+import asyncio
 import discord
 import logging
+import functools
 from discord.ext import tasks
 from discord.ext import commands
+from concurrent.futures.thread import ThreadPoolExecutor
 
 
 def snowflake_to_timestamp(snowflake: int):
@@ -66,7 +69,9 @@ class Config(commands.Cog):
         self.update_status.start()
         self.log_data.start()
 
-    def save_data(self):
+    def __save_data_impl(self):
+        self.logger.debug("saving data...")
+
         with open("config.json", "w+") as file:
             json.dump(self.config, file)
 
@@ -75,7 +80,13 @@ class Config(commands.Cog):
 
         self.logger.debug("done saving data.")
 
-    @tasks.loop(minutes=1.0)
+    async def save_data(self):
+        with ThreadPoolExecutor(1) as executor:
+            await asyncio.get_event_loop().run_in_executor(
+                executor, functools.partial(self.__save_data_impl)
+            )
+
+    @tasks.loop(minutes=5.0)
     async def periodic_data_clean_and_save(self):
         self.logger.debug("cleaning data...")
         removed_questions = 0
@@ -116,7 +127,7 @@ class Config(commands.Cog):
             removed_questions,
             removed_responses,
         )
-        self.save_data()
+        await self.save_data()
 
     @tasks.loop(minutes=1.0)
     async def update_status(self):
@@ -166,7 +177,7 @@ class Config(commands.Cog):
 
     def cog_unload(self):
         self.logger.debug("cog is being unloaded, saving data...")
-        self.save_data()
+        self.__save_data_impl()  # can't async, doesn't matter
 
 
 async def setup(client: commands.Bot):
