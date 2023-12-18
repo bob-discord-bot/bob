@@ -69,21 +69,22 @@ class Config(commands.Cog):
         self.update_status.start()
         self.log_data.start()
 
-    def __save_data_impl(self):
-        self.logger.debug("saving data...")
+    @classmethod
+    def __save_data_impl(logger, config, question_map):
+        logger.debug("saving data...")
 
         with open("config.json", "w+") as file:
-            json.dump(self.config, file)
+            json.dump(config, file)
 
         with open("data.json", "w+") as file:
-            file.write(qna.json.questions_to_json(list(self.question_map.values())))
+            file.write(qna.json.questions_to_json(list(question_map.values())))
 
-        self.logger.debug("done saving data.")
+        logger.debug("done saving data.")
 
     async def save_data(self):
         with ProcessPoolExecutor(1) as executor:
             await asyncio.get_event_loop().run_in_executor(
-                executor, functools.partial(self.__save_data_impl)
+                executor, functools.partial(self.__save_data_impl, self.logger, self.config, self.question_map)
             )
 
     @tasks.loop(minutes=5.0)
@@ -177,7 +178,7 @@ class Config(commands.Cog):
 
     def cog_unload(self):
         self.logger.debug("cog is being unloaded, saving data...")
-        self.__save_data_impl()  # can't async, doesn't matter
+        self.__save_data_impl(self.logger, self.config, self.question_map)  # can't async, doesn't matter
 
 
 async def setup(client: commands.Bot):
