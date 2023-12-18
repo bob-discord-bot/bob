@@ -1,7 +1,7 @@
 import logging
 import typing
 
-from cogs.config import Config
+from bob.cogs.config import Config
 from discord.ext import commands
 
 
@@ -24,18 +24,24 @@ class OptIn(commands.Cog):
             return await ctx.reply("You're already opted out!")
 
         self.config.config["optout"].append(ctx.author.id)
-        await ctx.reply("You've opted out of bob's message collection. If you want to remove your message data, "
-                        f"run **{self.client.command_prefix}clean**.")
+        await ctx.reply(
+            "You've opted out of bob's message collection. If you want to remove your message data, "
+            f"run **{self.client.command_prefix}clean**."
+        )
 
     @commands.check(blacklist_check)
     @commands.hybrid_command(brief="Opt-in to bob message collection.")
     async def optin(self, ctx: commands.Context):
         if ctx.author.id not in self.config.config["optout"]:
-            return await ctx.reply("You're already opted in. bob is opt-out by default since September 2022.")
+            return await ctx.reply(
+                "You're already opted in. bob is opt-out by default since September 2022."
+            )
 
         self.config.config["optout"].remove(ctx.author.id)
-        await ctx.reply("You've opted into bob's message collection.\nRemember that by opting in, "
-                        "you agree to bob's Terms of Service and Privacy Policy: https://bob.omame.xyz/terms.")
+        await ctx.reply(
+            "You've opted into bob's message collection.\nRemember that by opting in, "
+            "you agree to bob's Terms of Service and Privacy Policy: https://bob.omame.xyz/terms."
+        )
 
 
 async def setup(client: commands.Bot):

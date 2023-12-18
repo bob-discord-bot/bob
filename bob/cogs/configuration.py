@@ -2,7 +2,7 @@
 
 import discord
 import logging
-from cogs.config import Config
+from bob.cogs.config import Config
 from discord.ext import commands
 
 
@@ -18,7 +18,9 @@ class Configuration(commands.Cog):
     async def channel(self, ctx: commands.Context, channel: discord.TextChannel):
         self.logger.debug(f"setting guild {ctx.guild.id}'s channel to {channel.id}")
         if str(ctx.guild.id) not in self.config.config["guilds"].keys():
-            self.config.config["guilds"].update({str(ctx.guild.id): {"channel": channel.id}})
+            self.config.config["guilds"].update(
+                {str(ctx.guild.id): {"channel": channel.id}}
+            )
         else:
             self.config.config["guilds"][str(ctx.guild.id)]["channel"] = channel.id
         await ctx.reply(f"Bob will now talk in {channel.mention}.")

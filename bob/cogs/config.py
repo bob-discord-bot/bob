@@ -1,6 +1,6 @@
 import os
 import topgg
-import qna
+import bob.qna
 import json
 import time
 import discord
@@ -29,9 +29,7 @@ class Config(commands.Cog):
         if os.path.exists("topgg.txt"):
             with open("topgg.txt") as file:
                 self.topgg = topgg.DBLClient(
-                    bot=self.client,
-                    token=file.readline().strip('\n'),
-                    autopost=True
+                    bot=self.client, token=file.readline().strip("\n"), autopost=True
                 )
 
         if os.path.exists("data.json"):
@@ -39,7 +37,9 @@ class Config(commands.Cog):
             with open("data.json") as file:
                 questions = qna.json.json_to_questions(file.read())
             for question in questions:
-                self.question_map.update({question.text + str(question.guild): question})
+                self.question_map.update(
+                    {question.text + str(question.guild): question}
+                )
             del questions
             self.logger.debug("loaded %d questions.", len(self.question_map))
 
@@ -89,7 +89,7 @@ class Config(commands.Cog):
             if question.author in self.config["blacklist"]:
                 to_pop.append(question_key)
                 continue
-            
+
             if question.guild not in [guild.id for guild in self.client.guilds]:
                 to_pop.append(question_key)
                 continue
@@ -111,30 +111,53 @@ class Config(commands.Cog):
             self.question_map.pop(key)
 
         removed_questions += len(to_pop)
-        self.logger.debug("removed %d questions and %d responses, saving data...", removed_questions, removed_responses)
+        self.logger.debug(
+            "removed %d questions and %d responses, saving data...",
+            removed_questions,
+            removed_responses,
+        )
         self.save_data()
 
     @tasks.loop(minutes=1.0)
     async def update_status(self):
         self.logger.debug("calculating responses...")
-        responses = len([response for question in self.question_map.values() for response in question.responses])
+        responses = len(
+            [
+                response
+                for question in self.question_map.values()
+                for response in question.responses
+            ]
+        )
 
         self.logger.debug(f"{responses} responses, updating status...")
         game = discord.Activity(
             type=discord.ActivityType.playing,
             name=f"with your messages | {self.client.command_prefix}help | {len(self.question_map.keys())} prompts and "
-                 f"{responses} responses",
+            f"{responses} responses",
         )
         await self.client.change_presence(activity=game)
 
     @tasks.loop(hours=24.0)
     async def log_data(self):
         self.logger.debug("calculating responses...")
-        responses = len([response for question in self.question_map.values() for response in question.responses])
+        responses = len(
+            [
+                response
+                for question in self.question_map.values()
+                for response in question.responses
+            ]
+        )
 
         self.logger.debug("adding analytics info...")
-        self.config["analytics"].append([len(self.question_map), responses, len(self.client.guilds), time.time(),
-                                         self.messages_sent])
+        self.config["analytics"].append(
+            [
+                len(self.question_map),
+                responses,
+                len(self.client.guilds),
+                time.time(),
+                self.messages_sent,
+            ]
+        )
 
         self.messages_sent = 0
 

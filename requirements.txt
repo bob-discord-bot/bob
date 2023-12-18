@@ -1,4 +1,4 @@
-git+https://github.com/Rapptz/discord.py
+discord.py
 python-Levenshtein
 flask
 flask-cors

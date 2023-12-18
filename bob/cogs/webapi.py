@@ -9,8 +9,8 @@ import threading
 import subprocess
 import nest_asyncio
 
-import qna.json
-from cogs.config import Config
+import bob.qna.json
+from bob.cogs.config import Config
 from discord.ext import commands
 
 from flask_cors import CORS
@@ -34,33 +34,45 @@ class WebAPI(commands.Cog):
         """
         Publicly available bot information, such as version, question count, response count, guilds, etc.
         """
+
         @self.app.route("/api/bot_info")
         def bot_info():
-            responses = len([response for question in self.config.question_map.values()
-                             for response in question.responses])
+            responses = len(
+                [
+                    response
+                    for question in self.config.question_map.values()
+                    for response in question.responses
+                ]
+            )
             return {
                 "version": bob.__version__,
                 "questions": len(self.config.question_map.keys()),
                 "responses": responses,
-                "guilds": len(self.client.guilds)
+                "guilds": len(self.client.guilds),
             }
 
         """
         Initiates the login procedure.
         """
+
         @self.app.route("/api/auth/start", methods=["POST"])
         def auth_start():
-            self.login_key = "".join(random.choices(string.ascii_letters + string.digits + string.punctuation, k=128))
+            self.login_key = "".join(
+                random.choices(
+                    string.ascii_letters + string.digits + string.punctuation, k=128
+                )
+            )
             with open(".login_key", "w+") as login_key:
                 login_key.write(self.login_key + "\n")
             return ""
 
         def auth_check():
-            return request.headers.get('Authorization') == self.login_key
+            return request.headers.get("Authorization") == self.login_key
 
         """
         Checks if login key is valid.
         """
+
         @self.app.route("/api/auth/check")
         def auth_check_route():
             if not auth_check():
@@ -79,20 +91,28 @@ class WebAPI(commands.Cog):
         
         For use in dashboard, requires authentication.
         """
+
         @self.app.route("/api/questions")
         def question_list():
             if not auth_check():
                 return "", 400
-            questions_list = qna.json.questions_to_list(self.config.question_map.values(), encrypt=False, to_str=True)
+            questions_list = qna.json.questions_to_list(
+                self.config.question_map.values(), encrypt=False, to_str=True
+            )
             questions = {k: v for k, v in enumerate(questions_list)}
-            search = request.args.get('search')
-            response_search = request.args.get('response_search')
-            start = request.args.get('start')
-            count = request.args.get('count')
+            search = request.args.get("search")
+            response_search = request.args.get("response_search")
+            start = request.args.get("start")
+            count = request.args.get("count")
             if search:
                 questions = {i: q for i, q in questions.items() if search in q["text"]}
             if response_search:
-                questions = {i: q for i, q in questions.items() for r in q["responses"] if response_search in r["text"]}
+                questions = {
+                    i: q
+                    for i, q in questions.items()
+                    for r in q["responses"]
+                    if response_search in r["text"]
+                }
             start = int(start) if start else None
             count = int(count) if count else None
             end = start + count if start is not None and count is not None else count
@@ -104,19 +124,23 @@ class WebAPI(commands.Cog):
         
         For use in dashboard, requires authentication.
         """
+
         @self.app.route("/api/questions/<question_id>")
         def question_info(question_id):
             if not auth_check():
                 return "", 400
             question_id = int(question_id)
             question_key = list(self.config.question_map.keys())[question_id]
-            return qna.json.question_to_dict(self.config.question_map[question_key], encrypt=False, to_str=True)
+            return qna.json.question_to_dict(
+                self.config.question_map[question_key], encrypt=False, to_str=True
+            )
 
         """
         Deletes a question.
 
         For use in dashboard, requires authentication.
         """
+
         @self.app.route("/api/questions/<question_id>", methods=["DELETE"])
         def question_delete(question_id):
             if not auth_check():
@@ -131,7 +155,10 @@ class WebAPI(commands.Cog):
 
         For use in dashboard, requires authentication.
         """
-        @self.app.route("/api/questions/<question_id>/responses/<response_id>", methods=["DELETE"])
+
+        @self.app.route(
+            "/api/questions/<question_id>/responses/<response_id>", methods=["DELETE"]
+        )
         def delete_response_from_question(question_id, response_id):
             if not auth_check():
                 return "", 400
@@ -146,17 +173,24 @@ class WebAPI(commands.Cog):
 
         For use in dashboard, requires authentication.
         """
+
         @self.app.route("/api/blacklist")
         def blacklist():
             if not auth_check():
                 return "", 400
-            return jsonify([str(blacklisted_id) for blacklisted_id in self.config.config["blacklist"]])
+            return jsonify(
+                [
+                    str(blacklisted_id)
+                    for blacklisted_id in self.config.config["blacklist"]
+                ]
+            )
 
         """
         Adds a new ID to the blacklist.
 
         For use in dashboard, requires authentication.
         """
+
         @self.app.route("/api/blacklist", methods=["POST"])
         def add_to_blacklist():
             if not auth_check():
@@ -170,6 +204,7 @@ class WebAPI(commands.Cog):
 
         For use in dashboard, requires authentication.
         """
+
         @self.app.route("/api/blacklist/<userid>", methods=["DELETE"])
         def delete_from_blacklist(userid):
             if not auth_check():
@@ -185,6 +220,7 @@ class WebAPI(commands.Cog):
 
         For use in dashboard, requires authentication.
         """
+
         @self.app.route("/api/maintenance/stop")
         def stop():
             if not auth_check():
@@ -199,6 +235,7 @@ class WebAPI(commands.Cog):
 
         For use in dashboard, requires authentication.
         """
+
         @self.app.route("/api/maintenance/update")
         def update():
             if not auth_check():
@@ -209,9 +246,7 @@ class WebAPI(commands.Cog):
             return "", 204
 
         self.process = threading.Thread(
-            target=self.app.run,
-            kwargs={"host": "127.0.0.1", "port": 8540},
-            daemon=True
+            target=self.app.run, kwargs={"host": "127.0.0.1", "port": 8540}, daemon=True
         )
         self.process.start()
 

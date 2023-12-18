@@ -2,13 +2,13 @@ import time
 import typing
 
 import bob
-import qna
+import bob.qna
 import discord
 import logging
 import datetime
 from discord.ext import commands
 
-from cogs.config import Config
+from bob.cogs.config import Config
 
 
 class UserCommands(commands.Cog):
@@ -25,9 +25,11 @@ class UserCommands(commands.Cog):
             title="Here you go!",
             description=f"You can join [the support server by clicking here](https://discord.gg/uuqZYPYrMj).",
             color=discord.Color.blue(),
-            timestamp=datetime.datetime.now()
+            timestamp=datetime.datetime.now(),
         )
-        embed.set_footer(text=bob.get_footer(), icon_url=self.client.user.display_avatar.url)
+        embed.set_footer(
+            text=bob.get_footer(), icon_url=self.client.user.display_avatar.url
+        )
 
         await ctx.reply(embed=embed)
 
@@ -42,7 +44,11 @@ class UserCommands(commands.Cog):
             text = placeholder
             question = None
             response = None
-            server_questions = [q for q in self.config.question_map.values() if q.guild == message.guild.id]
+            server_questions = [
+                q
+                for q in self.config.question_map.values()
+                if q.guild == message.guild.id
+            ]
             if len(server_questions):
                 question = qna.helpers.get_closest_question(server_questions, content)
                 response = qna.helpers.pick_response(question)
@@ -52,22 +58,40 @@ class UserCommands(commands.Cog):
                 embed = discord.Embed(
                     title="Debug information",
                     color=discord.Color.gold(),
-                    timestamp=datetime.datetime.now()
+                    timestamp=datetime.datetime.now(),
                 )
-                embed.add_field(name="I thought you said...", value=question.text or "(empty message)", inline=False)
-                embed.add_field(name="Originally said by", value=f"<@{response.author}> in <#{question.channel}>, replying to <@{question.author}>", inline=False)
-                embed.add_field(name="Message link", value=f"https://discord.com/channels/{response.guild}/{response.channel}/{response.message}", inline=False)
-                embed.set_footer(text=bob.get_footer(), icon_url=self.client.user.display_avatar.url)
+                embed.add_field(
+                    name="I thought you said...",
+                    value=question.text or "(empty message)",
+                    inline=False,
+                )
+                embed.add_field(
+                    name="Originally said by",
+                    value=f"<@{response.author}> in <#{question.channel}>, replying to <@{question.author}>",
+                    inline=False,
+                )
+                embed.add_field(
+                    name="Message link",
+                    value=f"https://discord.com/channels/{response.guild}/{response.channel}/{response.message}",
+                    inline=False,
+                )
+                embed.set_footer(
+                    text=bob.get_footer(), icon_url=self.client.user.display_avatar.url
+                )
             await ctx.reply(text, embed=embed)
         else:
-            await ctx.reply("I'm not set up in this server, thus I can't give you debug information for replies.")
+            await ctx.reply(
+                "I'm not set up in this server, thus I can't give you debug information for replies."
+            )
 
     @commands.hybrid_command(brief="Wipe your data from bob's dataset.")
     async def clean(self, ctx: commands.Context):
         if ctx.author.id not in self.to_wipe:
-            await ctx.reply("Are you sure you want to wipe your data from bob? **This action is irreversible.** "
-                            "If you're sure you want to wipe your data from bob, please run the command again within "
-                            "30 seconds.")
+            await ctx.reply(
+                "Are you sure you want to wipe your data from bob? **This action is irreversible.** "
+                "If you're sure you want to wipe your data from bob, please run the command again within "
+                "30 seconds."
+            )
             self.to_wipe[ctx.author.id] = time.time()
             return
         else:
@@ -87,8 +111,12 @@ class UserCommands(commands.Cog):
                         if response.author == ctx.author.id:
                             question.responses.remove(response)
                             responses_removed += 1
-                await msg.edit(content=f"Done (removed {questions_removed} prompts and {responses_removed} responses).")
-                self.logger.debug(f"{ctx.author} wiped their data (q/a: {questions_removed}, {responses_removed})")
+                await msg.edit(
+                    content=f"Done (removed {questions_removed} prompts and {responses_removed} responses)."
+                )
+                self.logger.debug(
+                    f"{ctx.author} wiped their data (q/a: {questions_removed}, {responses_removed})"
+                )
             else:
                 del self.to_wipe[ctx.author.id]
                 await self.clean(ctx)
@@ -113,29 +141,16 @@ class UserCommands(commands.Cog):
         embed = discord.Embed(
             title="Statistics",
             color=discord.Color.green(),
-            timestamp=datetime.datetime.now()
+            timestamp=datetime.datetime.now(),
         )
-        embed.add_field(
-            name="Server prompts",
-            value=str(questions_total)
+        embed.add_field(name="Server prompts", value=str(questions_total))
+        embed.add_field(name="Server responses", value=str(responses_total))
+        embed.add_field(name="Servers", value=str(len(self.client.guilds)))
+        embed.add_field(name="Your prompts", value=str(user_questions))
+        embed.add_field(name="Your responses", value=str(user_responses))
+        embed.set_footer(
+            text=bob.get_footer(), icon_url=self.client.user.display_avatar.url
         )
-        embed.add_field(
-            name="Server responses",
-            value=str(responses_total)
-        )
-        embed.add_field(
-            name="Servers",
-            value=str(len(self.client.guilds))
-        )
-        embed.add_field(
-            name="Your prompts",
-            value=str(user_questions)
-        )
-        embed.add_field(
-            name="Your responses",
-            value=str(user_responses)
-        )
-        embed.set_footer(text=bob.get_footer(), icon_url=self.client.user.display_avatar.url)
         await ctx.reply(embed=embed)
 
 
