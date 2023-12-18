@@ -9,7 +9,7 @@ import threading
 import subprocess
 import nest_asyncio
 
-import bob.qna as qna.json
+import bob.qna.json
 from bob.cogs.config import Config
 from discord.ext import commands
 
@@ -96,7 +96,7 @@ class WebAPI(commands.Cog):
         def question_list():
             if not auth_check():
                 return "", 400
-            questions_list = qna.json.questions_to_list(
+            questions_list = bob.qna.json.questions_to_list(
                 self.config.question_map.values(), encrypt=False, to_str=True
             )
             questions = {k: v for k, v in enumerate(questions_list)}
@@ -131,7 +131,7 @@ class WebAPI(commands.Cog):
                 return "", 400
             question_id = int(question_id)
             question_key = list(self.config.question_map.keys())[question_id]
-            return qna.json.question_to_dict(
+            return bob.qna.json.question_to_dict(
                 self.config.question_map[question_key], encrypt=False, to_str=True
             )
 
