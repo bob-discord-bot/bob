@@ -9,7 +9,7 @@ import logging
 import functools
 from discord.ext import tasks
 from discord.ext import commands
-from concurrent.futures.thread import ThreadPoolExecutor
+from concurrent.futures.process import ProcessPoolExecutor
 
 
 def snowflake_to_timestamp(snowflake: int):
@@ -81,7 +81,7 @@ class Config(commands.Cog):
         self.logger.debug("done saving data.")
 
     async def save_data(self):
-        with ThreadPoolExecutor(1) as executor:
+        with ProcessPoolExecutor(1) as executor:
             await asyncio.get_event_loop().run_in_executor(
                 executor, functools.partial(self.__save_data_impl)
             )
