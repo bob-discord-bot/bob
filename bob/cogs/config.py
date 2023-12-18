@@ -1,6 +1,6 @@
 import os
 import topgg
-import bob.qna
+import bob.qna as qna
 import json
 import time
 import discord

@@ -20,8 +20,8 @@ class ModMode(commands.Cog):
         guild: discord.Guild,
         user: discord.Member,
         message: discord.Message,
-        question: qna.classes.Question,
-        response: qna.classes.Response,
+        question: bob.qna.classes.Question,
+        response: bob.qna.classes.Response,
     ):
         self.data[f"{guild.id}+{user.id}"][message.id] = {
             "question": question,
@@ -62,10 +62,10 @@ class DeleteView(discord.ui.View):
             )
         print(message.id, self.mod_mode.data)
         if message.id in self.mod_mode.data[f"{guild.id}+{user.id}"]:
-            question: qna.classes.Question = self.mod_mode.data[
+            question: bob.qna.classes.Question = self.mod_mode.data[
                 f"{guild.id}+{user.id}"
             ][message.id]["question"]
-            response: qna.classes.Response = self.mod_mode.data[
+            response: bob.qna.classes.Response = self.mod_mode.data[
                 f"{guild.id}+{user.id}"
             ][message.id]["response"]
             question.responses.remove(response)

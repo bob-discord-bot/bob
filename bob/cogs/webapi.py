@@ -9,7 +9,7 @@ import threading
 import subprocess
 import nest_asyncio
 
-import bob.qna.json
+import bob.qna as qna.json
 from bob.cogs.config import Config
 from discord.ext import commands
 

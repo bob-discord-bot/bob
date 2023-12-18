@@ -1,5 +1,5 @@
 # LaR: Learn and Reply
-import bob.qna
+import bob.qna as qna
 import discord
 import logging
 from bob.cogs.modmode import DeleteView, ModMode

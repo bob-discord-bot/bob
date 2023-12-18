@@ -2,7 +2,7 @@ import time
 import typing
 
 import bob
-import bob.qna
+import bob.qna as qna
 import discord
 import logging
 import datetime
