@@ -1,9 +1,8 @@
 discord.py
-python-Levenshtein
+Levenshtein
 flask
 flask-cors
 nest-asyncio
-requests
 jishaku
 pynacl
 topggpy

@@ -5,7 +5,9 @@ import discord
 import logging
 import argparse
 import traceback
+from tortoise import Tortoise
 from discord.ext import commands
+from .db.config import TORTOISE_ORM
 
 from bob.cogs.config import Config
 
@@ -87,6 +89,10 @@ async def on_command_error(ctx: commands.Context, error):
 
 @client.event
 async def on_ready():
+    logger.debug("initialising database...")
+    await Tortoise.init(
+        config=TORTOISE_ORM,
+    )
     cogs = [
         "bob.cogs.config",
         "bob.cogs.modmode",

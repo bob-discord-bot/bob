@@ -6,10 +6,8 @@ import time
 import asyncio
 import discord
 import logging
-import functools
 from discord.ext import tasks
 from discord.ext import commands
-from bob import _internal
 from concurrent.futures.process import ProcessPoolExecutor
 
 
@@ -66,22 +64,12 @@ class Config(commands.Cog):
 
         self.logger.debug("loaded config.")
 
-        self.periodic_data_clean_and_save.start()
+        self.periodic_data_clean.start()
         self.update_status.start()
         self.log_data.start()
 
-    async def save_data(self):
-        with ProcessPoolExecutor(1) as executor:
-            await asyncio.get_event_loop().run_in_executor(
-                executor,
-                _internal.__save_data_impl,
-                self.logger,
-                self.config,
-                self.question_map,
-            )
-
     @tasks.loop(minutes=5.0)
-    async def periodic_data_clean_and_save(self):
+    async def periodic_data_clean(self):
         self.logger.debug("cleaning data...")
         removed_questions = 0
         removed_responses = 0
@@ -117,11 +105,10 @@ class Config(commands.Cog):
 
         removed_questions += len(to_pop)
         self.logger.debug(
-            "removed %d questions and %d responses, saving data...",
+            "removed %d questions and %d responses",
             removed_questions,
             removed_responses,
         )
-        await self.save_data()
 
     @tasks.loop(minutes=1.0)
     async def update_status(self):

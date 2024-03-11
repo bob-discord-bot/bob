@@ -1,10 +1,9 @@
 .idea/
 venv/
 token.txt
-data.json
-config.json
 __pycache__/
-.key
 .login_key
 topgg.txt
 result
+bob.db
+.key
