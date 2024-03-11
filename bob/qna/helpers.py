@@ -3,21 +3,22 @@ import typing
 import Levenshtein
 import discord
 
-from .classes import Question, Response
+from bob.db import Question, Response
 
 
-def calculate_popularity(question: Question) -> typing.Dict[Response, float]:
+async def calculate_popularity(question: Question) -> typing.Dict[Response, float]:
     popularity = {}
     total = 0
-    for response in question.responses:
+    responses = await question.responses.all()
+    for response in responses:
         total += response.count
-    for response in question.responses:
+    for response in responses:
         popularity.update({response: response.count / total})
     return popularity
 
 
-def pick_response(question: Question) -> Response:
-    popularity = calculate_popularity(question)
+async def pick_response(question: Question) -> Response:
+    popularity = await calculate_popularity(question)
 
     keys = list(popularity.keys())
     random_prob = random.random()
@@ -43,7 +44,11 @@ def get_closest_question(questions: typing.List[Question], message: str) -> Ques
 def get_message_as_string(message: discord.Message) -> str:
     ret = message.clean_content
     ret += " " + " ".join([attachment.url for attachment in message.attachments])
-    ret += " " + " ".join([f"https://media.discordapp.net/stickers/{sticker.id}.png?size=160"
-                           for sticker in message.stickers])
+    ret += " " + " ".join(
+        [
+            f"https://media.discordapp.net/stickers/{sticker.id}.png?size=160"
+            for sticker in message.stickers
+        ]
+    )
 
     return ret.strip()

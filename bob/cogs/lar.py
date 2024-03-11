@@ -3,7 +3,7 @@ import bob.qna as qna
 import discord
 import logging
 from bob.cogs.modmode import DeleteView, ModMode
-from bob.db import OptOutEntry, Blacklist, Guild
+from bob.db import OptOutEntry, Blacklist, Guild, Question, Response
 from discord.ext import commands
 
 
@@ -34,30 +34,32 @@ class LaR(commands.Cog):
             content = qna.classes.sanitize_question(
                 qna.helpers.get_message_as_string(reply)
             )
-            
-            # if content + str(message.guild.id) not in self.config.question_map.keys():
-                self.config.question_map.update(
-                    {
-                        content
-                        + str(message.guild.id): qna.classes.Question(
-                            content,
-                            reply.guild.id,
-                            reply.channel.id,
-                            reply.id,
-                            reply.author.id,
-                        )
-                    }
+
+            question = await Question.get_or_none(guild=message.guild.id, text=content)
+            if not question:
+                question = await Question.create(
+                    text=content,
+                    guild=message.guild.id,
+                    channel=message.channel.id,
+                    message=message.id,
+                    author=message.author.id,
                 )
             response_content = qna.helpers.get_message_as_string(message)
-            self.config.question_map[content + str(message.guild.id)].add_response(
-                qna.classes.Response(
-                    response_content,
-                    message.guild.id,
-                    message.channel.id,
-                    message.id,
-                    message.author.id,
-                )
+            response = await Response.get_or_none(
+                question=question, text=response_content
             )
+            if not response:
+                response = await Response.create(
+                    text=response_content,
+                    question=question,
+                    guild=message.guild.id,
+                    channel=message.channel.id,
+                    message=message.id,
+                    author=message.author.id,
+                )
+            else:
+                response.count += 1
+                await response.save()
             self.logger.debug(
                 f"save: {qna.helpers.get_message_as_string(reply)} -> "
                 f"{qna.helpers.get_message_as_string(message)}"
@@ -68,7 +70,6 @@ class LaR(commands.Cog):
         channel: discord.TextChannel = message.channel
 
         guildEntry = await Guild.get_or_none(guildId=guild.id)
-        # if str(guild.id) in self.config.config["guilds"].keys():
         if guildEntry:
             if channel.id == guildEntry.channelId:
                 content = qna.classes.sanitize_question(
@@ -76,18 +77,14 @@ class LaR(commands.Cog):
                 )
                 placeholder = "I don't know what to say (give me some time to learn)"
                 text = placeholder
-                server_questions = [
-                    q
-                    for q in self.config.question_map.values()
-                    if q.guild == message.guild.id
-                ]
+                server_questions = await Question.filter(guild=message.guild.id).all()
                 question = None
                 response = None
                 if len(server_questions):
                     question = qna.helpers.get_closest_question(
                         server_questions, content
                     )
-                    response = qna.helpers.pick_response(question)
+                    response = await qna.helpers.pick_response(question)
                     text = response.text or placeholder
                 if message.content.startswith(self.client.command_prefix):
                     text += (
@@ -95,17 +92,16 @@ class LaR(commands.Cog):
                         "go to another channel or use slash commands.)"
                     )
                 view = None
-                if self.mod_mode.is_in_mod_mode(guild, message.author):
-                    view = DeleteView(self.mod_mode, self.config)
+                # if self.mod_mode.is_in_mod_mode(guild, message.author):
+                #     view = DeleteView(self.mod_mode, self.config)
                 message_reply = await message.reply(text, view=view)
-                if self.mod_mode.is_in_mod_mode(guild, message.author):
-                    self.mod_mode.save_info(
-                        guild, message.author, message_reply, question, response
-                    )
+                # if self.mod_mode.is_in_mod_mode(guild, message.author):
+                #     self.mod_mode.save_info(
+                #         guild, message.author, message_reply, question, response
+                #     )
                 self.logger.debug(
                     f"reply: {qna.helpers.get_message_as_string(message)} -> {text}"
                 )
-                self.config.messages_sent += 1
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
