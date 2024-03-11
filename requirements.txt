@@ -1,8 +1,7 @@
 discord.py
 Levenshtein
-flask
-flask-cors
 nest-asyncio
 jishaku
 pynacl
 topggpy
+yaml

@@ -21,14 +21,13 @@
           propagatedBuildInputs = [
             discordpy
             levenshtein
-            flask
-            flask-cors
             nest-asyncio
             deps.jishaku
             pynacl
             deps.topggpy
             deps.tortoiseORM
             deps.aerich
+            pyyaml
           ];
 
           src = ./.;
@@ -40,8 +39,6 @@
         packages = with pkgs.python311Packages; [
           discordpy
           levenshtein
-          flask
-          flask-cors
           nest-asyncio
           deps.jishaku
           pynacl
@@ -49,6 +46,7 @@
           deps.tortoiseORM
           asyncpg
           deps.aerich
+          pyyaml
         ];
       };
     }

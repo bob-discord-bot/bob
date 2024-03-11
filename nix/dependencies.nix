@@ -101,12 +101,12 @@ rec {
 
     aerich = buildPythonPackage rec {
         pname = "aerich";
-        version = "2024-01-23";
+        version = "2023-12-26";
         src = fetchFromGitHub {
             owner = "tortoise";
             repo = "aerich";
-            rev = "51117867a690884531539be797508062a919e3c6";
-            hash = "sha256-yBky981JQ6CRLf3+mfH0ZkcWi4gGFefAqTPFAoQ6u4k=";
+            rev = "ede53ade867f5e0a0a3f64c7363ab6decf5bd3c5";
+            hash = "sha256-8zW9NH4OI7N9FnhfqNkEgEvzhFTnwxDHDMu1K26pGZE=";
         };
         doCheck = false;
         pyproject = true;

@@ -1,9 +1,9 @@
 .idea/
 venv/
-token.txt
+.config.yml
 __pycache__/
 .login_key
 topgg.txt
 result
-bob.db
+bob.db*
 .key

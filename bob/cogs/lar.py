@@ -3,7 +3,7 @@ import bob.qna as qna
 import discord
 import logging
 from bob.cogs.modmode import DeleteView, ModMode
-from bob.cogs.config import Config
+from bob.db import OptOutEntry, Blacklist, Guild
 from discord.ext import commands
 
 
@@ -11,14 +11,12 @@ class LaR(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
         self.logger = logging.getLogger("cogs.LaR")
-        self.config: Config | None = client.get_cog("Config")
         self.logger.debug("registered.")
         self.mod_mode: ModMode | None = self.client.get_cog("ModMode")
 
     async def learn(self, message: discord.Message):
-        if (
-            message.author.id in self.config.config["optout"]
-            or message.author.id in self.config.config["blacklist"]
+        if await OptOutEntry.exists(userId=message.author.id) or await Blacklist.exists(
+            userId=message.author.id
         ):
             return
 
@@ -30,13 +28,14 @@ class LaR(commands.Cog):
             except discord.NotFound:
                 return
 
-            if reply.author.id in self.config.config["optout"]:
+            if await OptOutEntry.exists(userId=reply.author.id):
                 return
 
             content = qna.classes.sanitize_question(
                 qna.helpers.get_message_as_string(reply)
             )
-            if content + str(message.guild.id) not in self.config.question_map.keys():
+            
+            # if content + str(message.guild.id) not in self.config.question_map.keys():
                 self.config.question_map.update(
                     {
                         content
@@ -68,8 +67,10 @@ class LaR(commands.Cog):
         guild: discord.Guild = message.guild
         channel: discord.TextChannel = message.channel
 
-        if str(guild.id) in self.config.config["guilds"].keys():
-            if channel.id == self.config.config["guilds"][str(guild.id)]["channel"]:
+        guildEntry = await Guild.get_or_none(guildId=guild.id)
+        # if str(guild.id) in self.config.config["guilds"].keys():
+        if guildEntry:
+            if channel.id == guildEntry.channelId:
                 content = qna.classes.sanitize_question(
                     qna.helpers.get_message_as_string(message)
                 )

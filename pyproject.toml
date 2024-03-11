@@ -5,23 +5,23 @@ build-backend = "hatchling.build"
 [tool.hatch.version]
 path = "bob/__init__.py"
 
-
 [tool.aerich]
 tortoise_orm = "bob.db.config.TORTOISE_ORM"
 location = "./migrations"
 src_folder = "./."
+
+
 [project]
 name = "bob"
 dynamic = ["version"]
 dependencies = [
   "discord.py",
   "Levenshtein",
-  "flask",
-  "flask-cors",
   "nest-asyncio",
   "jishaku",
   "pynacl",
   "topggpy",
+  "yaml",
 ]
 
 [project.scripts]
