@@ -14,7 +14,7 @@
       packages = rec {
         bob = with pkgs.python311Packages; buildPythonApplication {
           pname = "bob";
-          version = "3.0.0";
+          version = "3.0.1";
           pyproject = true;
           nativeBuildInputs = [ hatchling ];
 
