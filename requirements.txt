@@ -4,4 +4,4 @@ nest-asyncio
 jishaku
 pynacl
 topggpy
-yaml
+PyYAML

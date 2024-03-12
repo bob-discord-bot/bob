@@ -14,7 +14,7 @@
       packages = rec {
         bob = with pkgs.python311Packages; buildPythonApplication {
           pname = "bob";
-          version = "3.0.0-alpha";
+          version = "3.0.0";
           pyproject = true;
           nativeBuildInputs = [ hatchling ];
 
@@ -45,7 +45,6 @@
           pynacl
           deps.topggpy
           deps.tortoiseORM
-          asyncpg
           deps.aerich
           pyyaml
           tqdm
