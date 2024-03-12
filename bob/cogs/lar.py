@@ -85,20 +85,20 @@ class LaR(commands.Cog):
                         server_questions, content
                     )
                     response = await qna.helpers.pick_response(question)
-                    text = response.text or placeholder
+                    text = response.text if response else placeholder
                 if message.content.startswith(self.client.command_prefix):
                     text += (
                         "\n(psst, i don't listen to commands here! if you want to run a command, "
                         "go to another channel or use slash commands.)"
                     )
                 view = None
-                # if self.mod_mode.is_in_mod_mode(guild, message.author):
-                #     view = DeleteView(self.mod_mode, self.config)
+                if self.mod_mode.is_in_mod_mode(guild, message.author):
+                    view = DeleteView(self.mod_mode)
                 message_reply = await message.reply(text, view=view)
-                # if self.mod_mode.is_in_mod_mode(guild, message.author):
-                #     self.mod_mode.save_info(
-                #         guild, message.author, message_reply, question, response
-                #     )
+                if self.mod_mode.is_in_mod_mode(guild, message.author):
+                    self.mod_mode.save_info(
+                        guild, message.author, message_reply, question, response
+                    )
                 self.logger.debug(
                     f"reply: {qna.helpers.get_message_as_string(message)} -> {text}"
                 )

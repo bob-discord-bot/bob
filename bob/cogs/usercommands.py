@@ -1,14 +1,12 @@
 import time
-import typing
-
 import bob
+from bob.db import Guild, Question, Response
 import bob.qna as qna
 import discord
 import logging
 import datetime
 from discord.ext import commands
-
-from bob.cogs.config import Config
+from tortoise.expressions import Subquery
 
 
 class UserCommands(commands.Cog):
@@ -16,7 +14,6 @@ class UserCommands(commands.Cog):
         self.client = client
         self.logger = logging.getLogger("cogs.UserCommands")
         self.logger.debug("registered.")
-        self.config: typing.Union[Config, None] = client.get_cog("Config")
         self.to_wipe = {}
 
     @commands.hybrid_command(brief="Need help? Join the support server!")
@@ -38,21 +35,18 @@ class UserCommands(commands.Cog):
         guild: discord.Guild = ctx.guild
         message: discord.Message = ctx.message
 
-        if str(guild.id) in self.config.config["guilds"].keys():
+        guildEntry = await Guild.get_or_none(guildId=guild.id)
+        if guildEntry:
             content = qna.classes.sanitize_question(prompt)
             placeholder = "I don't know what to say (give me some time to learn)"
             text = placeholder
             question = None
             response = None
-            server_questions = [
-                q
-                for q in self.config.question_map.values()
-                if q.guild == message.guild.id
-            ]
+            server_questions = await Question.filter(guild=message.guild.id).all()
             if len(server_questions):
                 question = qna.helpers.get_closest_question(server_questions, content)
-                response = qna.helpers.pick_response(question)
-                text = response.text or placeholder
+                response = await qna.helpers.pick_response(question)
+                text = response.text if response else placeholder
             embed = None
             if response:
                 embed = discord.Embed(
@@ -72,7 +66,7 @@ class UserCommands(commands.Cog):
                 )
                 embed.add_field(
                     name="Message link",
-                    value=f"https://discord.com/channels/{response.guild}/{response.channel}/{response.message}",
+                    value=f"https://discord.com/channels/{question.guild}/{question.channel}/{response.message}",
                     inline=False,
                 )
                 embed.set_footer(
@@ -97,20 +91,8 @@ class UserCommands(commands.Cog):
         else:
             if self.to_wipe[ctx.author.id] + 30 > time.time():
                 msg = await ctx.reply("Wiping your data (this may take a while)...")
-                questions_removed = 0
-                responses_removed = 0
-                question_map = self.config.question_map.copy()
-                for question_key in question_map:
-                    question = self.config.question_map[question_key]
-                    if question.author == ctx.author.id:
-                        self.config.question_map.pop(question_key)
-                        questions_removed += 1
-                        continue
-                    responses = question.responses.copy()
-                    for response in responses:
-                        if response.author == ctx.author.id:
-                            question.responses.remove(response)
-                            responses_removed += 1
+                questions_removed = await Question.filter(author=ctx.author.id).delete()
+                responses_removed = await Response.filter(author=ctx.author.id).delete()
                 await msg.edit(
                     content=f"Done (removed {questions_removed} prompts and {responses_removed} responses)."
                 )
@@ -123,21 +105,17 @@ class UserCommands(commands.Cog):
 
     @commands.hybrid_command(brief="Check the bot's statistics.")
     async def stats(self, ctx: commands.Context):
-        user_questions = 0
-        user_responses = 0
-        questions_total = 0
-        responses_total = 0
-        for question_key in self.config.question_map:
-            question = self.config.question_map[question_key]
-            if question.guild != ctx.guild.id:
-                continue
-            questions_total += 1
-            if question.author == ctx.author.id:
-                user_questions += 1
-            for response in question.responses:
-                if response.author == ctx.author.id:
-                    user_responses += 1
-            responses_total += len(question.responses)
+        user_questions = await Question.filter(
+            guild=ctx.guild.id, author=ctx.author.id
+        ).count()
+        user_responses = await Response.filter(
+            question_id=Subquery(Question.filter(guild=ctx.guild.id).values("id")),
+            author=ctx.author.id,
+        ).count()
+        questions_total = await Question.filter(guild=ctx.guild.id).count()
+        responses_total = await Response.filter(
+            question_id=Subquery(Question.filter(guild=ctx.guild.id).values("id"))
+        ).count()
         embed = discord.Embed(
             title="Statistics",
             color=discord.Color.green(),

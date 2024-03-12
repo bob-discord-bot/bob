@@ -1,8 +1,7 @@
 import logging
 import discord
 from discord.ext import commands
-import bob.qna.classes
-from bob.cogs.config import Config
+from bob.db import Question, Response
 
 
 class ModMode(commands.Cog):
@@ -20,15 +19,19 @@ class ModMode(commands.Cog):
         guild: discord.Guild,
         user: discord.Member,
         message: discord.Message,
-        question: bob.qna.classes.Question,
-        response: bob.qna.classes.Response,
+        question: Question,
+        response: Response,
     ):
         self.data[f"{guild.id}+{user.id}"][message.id] = {
             "question": question,
             "response": response,
         }
         self.logger.debug(
-            "[%s] (%i) %s -> %s", str(user), message.id, question.text, response.text
+            "[%s] (%i) %s -> %s",
+            str(user),
+            message.id,
+            question.text,
+            response.text if response else "whoops! response is None",
         )
 
     @commands.has_permissions(manage_messages=True)
@@ -46,10 +49,9 @@ class ModMode(commands.Cog):
 
 
 class DeleteView(discord.ui.View):
-    def __init__(self, mod_mode: ModMode, config: Config):
+    def __init__(self, mod_mode: ModMode):
         super().__init__()
         self.mod_mode = mod_mode
-        self.config = config
 
     @discord.ui.button(label="Delete", style=discord.ButtonStyle.red)
     async def delete(self, interaction: discord.Interaction, _: discord.ui.Button):
@@ -62,19 +64,19 @@ class DeleteView(discord.ui.View):
             )
         print(message.id, self.mod_mode.data)
         if message.id in self.mod_mode.data[f"{guild.id}+{user.id}"]:
-            question: bob.qna.classes.Question = self.mod_mode.data[
-                f"{guild.id}+{user.id}"
-            ][message.id]["question"]
-            response: bob.qna.classes.Response = self.mod_mode.data[
-                f"{guild.id}+{user.id}"
-            ][message.id]["response"]
-            question.responses.remove(response)
+            question: Question = self.mod_mode.data[f"{guild.id}+{user.id}"][
+                message.id
+            ]["question"]
+            response: Response = self.mod_mode.data[f"{guild.id}+{user.id}"][
+                message.id
+            ]["response"]
+            await response.delete()
             self.mod_mode.logger.debug(
                 "Deleted response %s -> %s", question.text, response.text
             )
 
-            if len(question.responses) == 0:
-                del self.config.question_map[question.text + str(question.guild)]
+            if (await question.responses.all().count()) == 0:
+                await question.delete()
                 self.mod_mode.logger.debug("Deleted question %s", question.text)
 
             del self.mod_mode.data[f"{guild.id}+{user.id}"][message.id]
