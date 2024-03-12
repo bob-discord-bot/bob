@@ -1,14 +1,26 @@
 import asyncio
 import discord
 import logging
+import argparse
 from .client import BobClient
-from . import config
+from . import config, __version__
 from .db import Guild
 
-logging.basicConfig(level=logging.DEBUG)
+parser = argparse.ArgumentParser(description=f"bob {__version__}")
+parser.add_argument("--debug", "-d", action="store_true", help="enable debug mode")
+args = parser.parse_args()
+
+logging.basicConfig(
+    level=logging.DEBUG if args.debug else logging.INFO,
+    format="[%(asctime)s / %(levelname)s] %(name)s: %(message)s",
+)
+
 intents = discord.Intents.default()
 intents.message_content = True
-bot = BobClient(intents=intents)
+bot = BobClient(
+    intents=intents,
+    command_prefix="bc." if args.debug else "b.",
+)
 
 
 @bot.event
@@ -30,6 +42,6 @@ async def on_message(message: discord.Message):
 
 
 try:
-    bot.run(config.get("token"))
+    bot.run(config.get("token"), log_handler=None)
 except KeyboardInterrupt:
     asyncio.get_running_loop().call_soon(bot.close())
