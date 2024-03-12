@@ -22,6 +22,9 @@ class BobClient(commands.Bot):
             "bob.cogs.optin",
             "bob.cogs.usercommands",
             "bob.cogs.help",
+            "bob.cogs.status",
+            # "bob.cogs.webapi",
+            "jishaku",
         ]:
             self.logger.debug(f"loading cog {cog}")
             await self.load_extension(cog)
