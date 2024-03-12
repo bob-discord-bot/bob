@@ -109,12 +109,12 @@ class UserCommands(commands.Cog):
             guild=ctx.guild.id, author=ctx.author.id
         ).count()
         user_responses = await Response.filter(
-            question_id=Subquery(Question.filter(guild=ctx.guild.id).values("id")),
+            question_id__in=Subquery(Question.filter(guild=ctx.guild.id).values("id")),
             author=ctx.author.id,
         ).count()
         questions_total = await Question.filter(guild=ctx.guild.id).count()
         responses_total = await Response.filter(
-            question_id=Subquery(Question.filter(guild=ctx.guild.id).values("id"))
+            question_id__in=Subquery(Question.filter(guild=ctx.guild.id).values("id"))
         ).count()
         embed = discord.Embed(
             title="Statistics",
