@@ -38,29 +38,38 @@ async def start_migration():
 
     from bob.qna.json import json_to_questions
 
-    logger.info("migrating qna data (this will take a while)...")
+    logger.info("migrating qna data (this might take a while)...")
     questions = json_to_questions(data)
 
-    for question in tqdm(questions, unit="questions"):
-        dbQuestion = await db.Question.create(
-            text=question.text,
-            guild=question.guild,
-            channel=question.channel,
-            message=question.message,
-            author=question.author,
-        )
-        await db.Response.bulk_create(
-            [
-                db.Response(
-                    text=resp.text,
-                    count=resp.count,
-                    message=resp.message,
-                    author=resp.author,
-                    question=dbQuestion,
-                )
-                for resp in question.responses
-            ]
-        )
+    logger.info("migrating questions...")
+    await db.Question.bulk_create(
+        [
+            db.Question(
+                id=idx + 1,
+                text=q.text,
+                guild=q.guild,
+                channel=q.channel,
+                message=q.message,
+                author=q.author,
+            )
+            for idx, q in enumerate(questions)
+        ]
+    )
+
+    logger.info("...and responses...")
+    await db.Response.bulk_create(
+        [
+            db.Response(
+                question_id=q_idx + 1,
+                text=r.text,
+                count=r.count,
+                message=r.message,
+                author=r.author,
+            )
+            for q_idx, q in enumerate(questions)
+            for r in q.responses
+        ]
+    )
 
     logger.info("cleaning up, we're done")
     os.remove("config.json")
