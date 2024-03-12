@@ -1,5 +1,7 @@
 import logging
 import discord
+from topgg import DBLClient
+from bob import config
 from bob.db import Question, Response
 from discord.ext import commands, tasks
 
@@ -10,6 +12,15 @@ class Status(commands.Cog):
         self.logger = logging.getLogger("cogs.Status")
         self.logger.debug("registered.")
         self.client.event(self.on_ready)
+
+        if config.get("topggToken") is not None:
+            self.topgg = DBLClient(
+                bot=self.client,
+                token=config.get("topggToken"),
+                autopost=True,
+            )
+        else:
+            self.logger.info("topgg token missing, not creating DBLClient")
 
     async def on_ready(self):
         self.update_status.start()

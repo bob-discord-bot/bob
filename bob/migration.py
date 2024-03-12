@@ -2,6 +2,7 @@ import os
 import json
 import logging
 from bob import db
+from tqdm import tqdm
 
 logger = logging.getLogger("migration")
 
@@ -40,7 +41,7 @@ async def start_migration():
     logger.info("migrating qna data (this will take a while)...")
     questions = json_to_questions(data)
 
-    for question in questions:
+    for question in tqdm(questions, unit="questions"):
         dbQuestion = await db.Question.create(
             text=question.text,
             guild=question.guild,

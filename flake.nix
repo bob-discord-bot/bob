@@ -28,6 +28,7 @@
             deps.tortoiseORM
             deps.aerich
             pyyaml
+            tqdm
           ];
 
           src = ./.;
@@ -47,6 +48,7 @@
           asyncpg
           deps.aerich
           pyyaml
+          tqdm
         ];
       };
     }
