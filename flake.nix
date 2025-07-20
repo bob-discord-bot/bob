@@ -12,7 +12,7 @@
       deps = pkgs.callPackage ./nix/dependencies.nix {};
     in {
       packages = rec {
-        bob = with pkgs.python311Packages; buildPythonApplication {
+        bob = with pkgs.python3Packages; buildPythonApplication {
           pname = "bob";
           version = "3.0.1";
           pyproject = true;
