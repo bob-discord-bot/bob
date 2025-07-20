@@ -1,5 +1,5 @@
 { pkgs, lib, fetchFromGitHub }:
-with pkgs.python311Packages;
+with pkgs.python3Packages;
 let
     import_expression = buildPythonPackage rec {
         pname = "import_expression";
