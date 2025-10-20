@@ -34,7 +34,7 @@ in rec {
     doCheck = false;
     pyproject = true;
     build-system = [ setuptools ];
-    propagatedBuildInputs = [ aiohttp ];
+    propagatedBuildInputs = [ aiohttp discordpy ];
   };
 
   tortoiseORM = buildPythonPackage rec {
