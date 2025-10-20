@@ -18,7 +18,6 @@ dependencies = [
   "discord.py",
   "Levenshtein",
   "nest-asyncio",
-  "jishaku",
   "pynacl",
   "topggpy",
   "PyYAML",

@@ -28,7 +28,6 @@ class BobClient(commands.Bot):
             "bob.cogs.help",
             "bob.cogs.status",
             # "bob.cogs.webapi",
-            "jishaku",
         ]:
             await self.load_extension(cog)
 
